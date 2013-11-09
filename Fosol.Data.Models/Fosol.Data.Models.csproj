@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B02E71F3-1069-488D-B50D-B1B62A687023}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Fosol.Common.Data</RootNamespace>
+    <AssemblyName>Fosol.Common.Data</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ColumnCollection.cs" />
+    <Compile Include="Configuration\ColumnElement.cs" />
+    <Compile Include="Configuration\ColumnElementCollection.cs" />
+    <Compile Include="Configuration\ConstraintElement.cs" />
+    <Compile Include="Configuration\ConstraintElementCollection.cs" />
+    <Compile Include="Configuration\ForeignKeyElement.cs" />
+    <Compile Include="Configuration\ImportAction.cs" />
+    <Compile Include="Configuration\ImportOption.cs" />
+    <Compile Include="Configuration\InvalidCharacterElement.cs" />
+    <Compile Include="Configuration\InvalidCharacterElementCollection.cs" />
+    <Compile Include="Configuration\ModelFactorySection.cs" />
+    <Compile Include="Configuration\RoutineElement.cs" />
+    <Compile Include="Configuration\RoutineElementCollection.cs" />
+    <Compile Include="Configuration\RulesElement.cs" />
+    <Compile Include="Configuration\TableElement.cs" />
+    <Compile Include="Configuration\TableElementCollection.cs" />
+    <Compile Include="Configuration\ViewElement.cs" />
+    <Compile Include="Configuration\ViewElementCollection.cs" />
+    <Compile Include="Constraint.cs" />
+    <Compile Include="ConstraintColumn.cs" />
+    <Compile Include="ConstraintColumnCollection.cs" />
+    <Compile Include="ConstraintType.cs" />
+    <Compile Include="Column.cs" />
+    <Compile Include="ConstraintCollection.cs" />
+    <Compile Include="EntityCollection.cs" />
+    <Compile Include="EntityType.cs" />
+    <Compile Include="Exceptions\GeneratorException.cs" />
+    <Compile Include="ModelFactory.cs" />
+    <Compile Include="Entity.cs" />
+    <Compile Include="Model.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReferentialConstraint.cs" />
+    <Compile Include="Resources\Strings.Designer.cs">
+      <DependentUpon>Strings.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="SqlClient\SqlColumn.cs" />
+    <Compile Include="SqlClient\SqlModelFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Fosol.Common\Fosol.Common\Fosol.Common.csproj">
+      <Project>{61d8cac1-6f1b-48fc-b94c-0601f1ce78d5}</Project>
+      <Name>Fosol.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Configuration\DefaultDataModel.config" />
+    <None Include="Schemas\DataModel.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

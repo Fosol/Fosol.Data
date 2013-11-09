@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="fosol.datamodel"
+    targetNamespace="http://schemas.fosol.ca/DataModel.xsd"
+    elementFormDefault="qualified"
+    xmlns="http://schemas.fosol.ca/DataModel.xsd"
+    xmlns:mstns="http://schemas.fosol.ca/DataModel.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+
+  <xs:element name="fosol.datamodel">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="rules" type="RulesElement" minOccurs="0"/>
+        <xs:element name="tables" type="TableElementCollection" minOccurs="0"/>
+        <xs:element name="views" type="ViewElementCollection" minOccurs="0"/>
+        <xs:element name="routines" type="RoutineElementCollection" minOccurs="0"/>
+      </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="alias" type="xs:string" use="optional"/>
+    <xs:attribute name="namespace" type="xs:string" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="RulesElement">
+    <xs:sequence>
+      <xs:element name="invalidCharacters" type="InvalidCharacterElementCollection" minOccurs="0"/>
+      <xs:element name="foreignKeys" type="ForeignKeyElement" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="InvalidCharacterElementCollection">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="add" type="InvalidCharacterElement"/>
+    </xs:sequence>
+    <xs:attribute name="defaultAlias" type="xs:string" default="_"/>
+  </xs:complexType>
+
+  <xs:complexType name="ForeignKeyElement">
+    <xs:attribute name="pluralize" type="xs:boolean" default="true"/>
+    <xs:attribute name="useColumnName" type="xs:boolean" default="true"/>
+  </xs:complexType>
+
+  <xs:complexType name="InvalidCharacterElement">
+    <xs:attribute name="char" type="xs:string" use="required"/>
+    <xs:attribute name="alias" type="xs:string" use="required"/>
+    <xs:attribute name="camelCase" type="xs:boolean" default="false"/>
+  </xs:complexType>
+
+  <xs:complexType name="TableElementCollection">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="add" type="TableElement"/>
+    </xs:sequence>
+    <xs:attribute name="import" type="ImportOption" default="None"/>
+  </xs:complexType>
+
+  <xs:simpleType name="ImportOption">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None"/>
+      <xs:enumeration value="All"/>
+      <xs:enumeration value="Configured"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="TableElement">
+    <xs:choice minOccurs="0" maxOccurs="2">
+      <xs:element name="columns" type="ColumnElementCollection"/>
+      <xs:element name="constraints" type="ConstraintElementCollection"/>
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="alias" type="xs:string"/>
+    <xs:attribute name="action" type="ImportAction" default="Import"/>
+  </xs:complexType>
+  
+  <xs:simpleType name="ImportAction">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Ignore"/>
+      <xs:enumeration value="Import"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="ColumnElementCollection">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="add" type="ColumnElement"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ColumnElement">
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="alias" type="xs:string"/>
+    <xs:attribute name="action" type="ImportAction" default="Import"/>
+  </xs:complexType>
+
+  <xs:complexType name="ConstraintElementCollection">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="add" type="ConstraintElement"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ConstraintElement">
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="alias" type="xs:string"/>
+    <xs:attribute name="parentAlias" type="xs:string"/>
+    <xs:attribute name="action" type="ImportAction" default="Import"/>
+  </xs:complexType>
+  
+  <xs:complexType name="ViewElementCollection">
+    <xs:attribute name="import" type="ImportOption" default="None"/>
+  </xs:complexType>
+
+  <xs:complexType name="RoutineElementCollection">
+    <xs:attribute name="import" type="ImportOption" default="None"/>
+  </xs:complexType>
+</xs:schema>

@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="ConfigApp" Condition="Exists('./App.$(Configuration).config')">
+    <XslTransformation XmlInputPaths="./App.config" XslInputPath="./App.$(Configuration).config" OutputPaths="./App.Build.config" />
+    <Copy SourceFiles="./App.Build.config" DestinationFiles="./App.config" />
+    <Delete Files="./App.Build.config" />
+  </Target>
+  <Target Name="ConfigConnectionStrings" Condition="Exists('./App_Config/ConnectionStrings.$(Configuration).config')">
+    <XslTransformation XmlInputPaths="./App_Config/ConnectionStrings.config" XslInputPath="./App_Config/ConnectionStrings.$(Configuration).config" OutputPaths="./App_Config/ConnectionStrings.Build.config" />
+    <Copy SourceFiles="./App_Config/ConnectionStrings.Build.config" DestinationFiles="./App_Config/ConnectionStrings.config" />
+    <Delete Files="./App_Config/ConnectionStrings.Build.config" />
+  </Target>
+  <Target Name="ConfigDataModel" Condition="Exists('./App_Config/DataModel.$(Configuration).config')">
+    <XslTransformation XmlInputPaths="./App_Config/DataModel.config" XslInputPath="./App_Config/DataModel.$(Configuration).config" OutputPaths="./App_Config/DataModel.Build.config" />
+    <Copy SourceFiles="./App_Config/DataModel.Build.config" DestinationFiles="./App_Config/DataModel.config" />
+    <Delete Files="./App_Config/DataModel.Build.config" />
+  </Target>
+
+  <Target Name="BeforeBuild">
+    <CallTarget Targets="ConfigApp" />
+    <CallTarget Targets="ConfigConnectionStrings" />
+    <CallTarget Targets="ConfigDataModel" />
+  </Target>
+</Project>
