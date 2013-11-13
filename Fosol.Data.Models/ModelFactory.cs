@@ -22,17 +22,31 @@ namespace Fosol.Data.Models
         /// get - The DbConnection object used to connect to the database.
         /// </summary>
         public DbConnection Connection { get; protected set; }
+
+        /// <summary>
+        /// get - The ModelFactorySection configuration object.
+        /// </summary>
+        public Configuration.ModelFactorySection Configuration { get; protected set; }
         #endregion
 
         #region Constructors
         /// <summary>
-        /// Creates a new instance of a Generator object.
+        /// Creates a new instance of a ModelFactory object.
+        /// </summary>
+        internal ModelFactory()
+        {
+            this.Configuration = new Configuration.ModelFactorySection();
+        }
+
+        /// <summary>
+        /// Creates a new instance of a ModelFactory object.
         /// </summary>
         /// <exception cref="System.ArgumentException">Parameters 'providerInvariantName' and 'connectionString' cannot be empty.</exception>
         /// <exception cref="System.ArgumentNullException">Parameters 'providerInvariantName' and 'connectionString' cannot be null.</exception>
         /// <param name="providerInvariantName">A valid provider name.</param>
         /// <param name="connectionString">A connection string or the name in the configuration file.</param>
         protected ModelFactory(string providerInvariantName, string connectionString)
+            : this()
         {
             Assert.IsNotNullOrEmpty(providerInvariantName, "providerInvariantName");
             Assert.IsNotNullOrEmpty(connectionString, "connectionString");
@@ -59,29 +73,51 @@ namespace Fosol.Data.Models
         }
 
         /// <summary>
-        /// Creates a new instance of a Generator object.
+        /// Creates a new instance of a ModelFactory object.
         /// </summary>
         /// <exception cref="System.ArgumentNullException">Parameter 'connection' cannot be null.</exception>
         /// <param name="connection">DbConnection object.</param>
         public ModelFactory(DbConnection connection)
+            : this()
         {
             Assert.IsNotNull(connection, "connection");
 
             this.Connection = connection;
         }
+
+        /// <summary>
+        /// Creates a new instance of a ModelFactory object.
+        /// </summary>
+        /// <param name="config">ModelFactorySection configuration object.</param>
+        public ModelFactory(Configuration.ModelFactorySection config)
+        {
+            Assert.IsNotNull(config, "config");
+
+            this.Configuration = config;
+        }
         #endregion
 
         #region Methods
+        public Model Build(string modelName)
+        {
+            Assert.IsNotNullOrEmpty(modelName, "modelName");
+            Assert.IsNotNull(this.Configuration, "Configuration");
+
+            var config = this.Configuration.DataModels[modelName];
+
+            return Build(config ??
+        }
+
         /// <summary>
-        /// Builds a data Model object that represents the database specified for this Generator.
+        /// Builds a data Model object that represents the database specified for this ModelFactory.
         /// </summary>
-        /// <param name="config">ModelFactorySection configuration object used to control how the model will be built.</param>
+        /// <param name="config">DataModelElement configuration object used to control how the model will be built.</param>
         /// <returns>A new instance of a Model.</returns>
-        public Model Build(Configuration.ModelFactorySection config = null)
+        public Model Build(Configuration.DataModelElement config = null)
         {
             // A database has not been selected.
             if (string.IsNullOrEmpty(this.Connection.Database))
-                throw new Exceptions.GeneratorException("Before building you must select an intial catalog, or select a database within the connection.");
+                throw new Exceptions.ModelFactoryException("Before building you must select an intial catalog, or select a database within the connection.");
 
             var model = new Model(this.Connection.Database, config);
 

@@ -45,11 +45,13 @@
     <Compile Include="Configuration\ColumnElementCollection.cs" />
     <Compile Include="Configuration\ConstraintElement.cs" />
     <Compile Include="Configuration\ConstraintElementCollection.cs" />
+    <Compile Include="Configuration\DataModelElement.cs" />
     <Compile Include="Configuration\ForeignKeyElement.cs" />
     <Compile Include="Configuration\ImportAction.cs" />
     <Compile Include="Configuration\ImportOption.cs" />
     <Compile Include="Configuration\InvalidCharacterElement.cs" />
     <Compile Include="Configuration\InvalidCharacterElementCollection.cs" />
+    <Compile Include="Configuration\DataModelElementCollection.cs" />
     <Compile Include="Configuration\ModelFactorySection.cs" />
     <Compile Include="Configuration\RoutineElement.cs" />
     <Compile Include="Configuration\RoutineElementCollection.cs" />
@@ -66,7 +68,7 @@
     <Compile Include="ConstraintCollection.cs" />
     <Compile Include="EntityCollection.cs" />
     <Compile Include="EntityType.cs" />
-    <Compile Include="Exceptions\GeneratorException.cs" />
+    <Compile Include="Exceptions\ModelFactoryException.cs" />
     <Compile Include="ModelFactory.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="Model.cs" />

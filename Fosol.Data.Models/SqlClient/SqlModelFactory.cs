@@ -134,7 +134,7 @@ namespace Fosol.Data.Models.SqlClient
 
                             // If the column doens't exist it means there was a failure importing it.
                             if (!entity.ContainsColumn(column_name))
-                                throw new Exceptions.GeneratorException(string.Format("Invalid constraint: Column '{0}' wasn't imported.", column_name));
+                                throw new Exceptions.ModelFactoryException(string.Format("Invalid constraint: Column '{0}' wasn't imported.", column_name));
 
                             var column = entity.Columns[column_name];
 

@@ -35,7 +35,7 @@ namespace Fosol.Data.Models
         /// <summary>
         /// get - The configuration used to build this model.
         /// </summary>
-        public Configuration.ModelFactorySection Configuration { get; private set; }
+        public Configuration.DataModelElement Configuration { get; private set; }
         #endregion
 
         #region Constructors
@@ -45,14 +45,14 @@ namespace Fosol.Data.Models
         /// <exception cref="System.ArgumentException">Parameter 'name' cannot be empty.</exception>
         /// <exception cref="System.ArgumentNullException">Parameter 'name' cannot be null.</exception>
         /// <param name="name">Name to identify the model.</param>
-        /// <param name="config">ModelFactorySection configuration object to control how this model will be built.</param>
-        public Model(string name, Configuration.ModelFactorySection config = null)
+        /// <param name="config">DataModelElement configuration object to control how this model will be built.</param>
+        public Model(string name, Configuration.DataModelElement config = null)
         {
             Assert.IsNotNullOrEmpty(name, "name");
 
             this.Name = name;
             this.Entities = new EntityCollection();
-            this.Configuration = config ?? new Configuration.ModelFactorySection(name);
+            this.Configuration = config ?? new Configuration.DataModelElement();
         }
         #endregion
 

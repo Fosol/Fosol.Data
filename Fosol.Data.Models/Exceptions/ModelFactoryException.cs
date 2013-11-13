@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Fosol.Data.Models.Exceptions
 {
-    public sealed class GeneratorException
+    public sealed class ModelFactoryException
         : Exception
     {
         #region Variables
@@ -16,18 +16,18 @@ namespace Fosol.Data.Models.Exceptions
         #endregion
 
         #region Constructors
-        public GeneratorException()
+        public ModelFactoryException()
             : base()
         {
         }
 
-        public GeneratorException(string message)
+        public ModelFactoryException(string message)
             : base(message)
         {
 
         }
 
-        public GeneratorException(string message, Exception innerException)
+        public ModelFactoryException(string message, Exception innerException)
             : base(message, innerException)
         {
         }

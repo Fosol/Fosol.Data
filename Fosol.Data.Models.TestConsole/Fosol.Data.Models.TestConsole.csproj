@@ -58,6 +58,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Fosol.Common\Fosol.Common\Fosol.Common.csproj">
+      <Project>{61d8cac1-6f1b-48fc-b94c-0601f1ce78d5}</Project>
+      <Name>Fosol.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Fosol.Data.Models\Fosol.Data.Models.csproj">
       <Project>{b02e71f3-1069-488d-b50d-b1b62a687023}</Project>
       <Name>Fosol.Data.Models</Name>

@@ -11,9 +11,9 @@ namespace Fosol.Data.Models.TestConsole
     {
         static void Main(string[] args)
         {
-            var section = (Configuration.ModelFactorySection)System.Configuration.ConfigurationManager.GetSection("fosol.datamodel");
+            var config = (Configuration.ModelFactorySection)System.Configuration.ConfigurationManager.GetSection("fosol.datamodel");
             var factory = new SqlModelFactory("FosolTeamDb");
-            var model = factory.Build();
+            var model = factory.Build(config.DataModels["Fosol.Team.Db"]);
         }
     }
 }
