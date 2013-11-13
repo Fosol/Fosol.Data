@@ -25,8 +25,8 @@
     <xs:attribute name="name" type="xs:string" use="required"/>
     <xs:attribute name="alias" type="xs:string" use="optional"/>
     <xs:attribute name="namespace" type="xs:string" use="optional"/>
-    <xs:attribute name="providerName" type="xs:string" use="required"/>
-    <xs:attribute name="connectionString" type="xs:string" use="required"/>
+    <xs:attribute name="providerName" type="xs:string" use="optional"/>
+    <xs:attribute name="connectionString" type="xs:string" use="optional"/>
   </xs:complexType>
 
   <xs:complexType name="RulesElement">

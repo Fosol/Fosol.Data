@@ -24,18 +24,18 @@ namespace Fosol.Data.Models
         public DbConnection Connection { get; protected set; }
 
         /// <summary>
-        /// get - The ModelFactorySection configuration object.
+        /// get - The DataModelElement configuration object.
         /// </summary>
-        public Configuration.ModelFactorySection Configuration { get; protected set; }
+        public Configuration.DataModelElement Configuration { get; protected set; }
         #endregion
 
         #region Constructors
         /// <summary>
         /// Creates a new instance of a ModelFactory object.
         /// </summary>
-        internal ModelFactory()
+        private ModelFactory(string modelName)
         {
-            this.Configuration = new Configuration.ModelFactorySection();
+            this.Configuration = new Configuration.DataModelElement();
         }
 
         /// <summary>
@@ -88,26 +88,18 @@ namespace Fosol.Data.Models
         /// <summary>
         /// Creates a new instance of a ModelFactory object.
         /// </summary>
-        /// <param name="config">ModelFactorySection configuration object.</param>
-        public ModelFactory(Configuration.ModelFactorySection config)
+        /// <param name="config">DataModelElement configuration object.</param>
+        public ModelFactory(Configuration.DataModelElement config)
         {
             Assert.IsNotNull(config, "config");
+            Assert.IsNotNull(config.Connection, "config.Connection", "The 'Connection' property cannot be null.");
 
             this.Configuration = config;
+            this.Connection = config.Connection;
         }
         #endregion
 
         #region Methods
-        public Model Build(string modelName)
-        {
-            Assert.IsNotNullOrEmpty(modelName, "modelName");
-            Assert.IsNotNull(this.Configuration, "Configuration");
-
-            var config = this.Configuration.DataModels[modelName];
-
-            return Build(config ??
-        }
-
         /// <summary>
         /// Builds a data Model object that represents the database specified for this ModelFactory.
         /// </summary>
@@ -115,9 +107,18 @@ namespace Fosol.Data.Models
         /// <returns>A new instance of a Model.</returns>
         public Model Build(Configuration.DataModelElement config = null)
         {
+            // You have initialized the ModelFactory without a valid DataModelElement configuration object.
+            // Either update the configuration information, or set the Connection value.
+            if ((this.Connection == null && config == null) || (this.Connection == null && config.Connection == null))
+                Assert.IsNotNull(this.Connection, "Connection", "The 'Connection' property cannot be null.");
+            
+            // Use the DataModelElement configuration information if the Connection hasn't already be initialized.
+            if (this.Connection == null)
+                this.Connection = config.Connection;
+
             // A database has not been selected.
             if (string.IsNullOrEmpty(this.Connection.Database))
-                throw new Exceptions.ModelFactoryException("Before building you must select an intial catalog, or select a database within the connection.");
+                throw new Exceptions.ModelFactoryException("The 'Connection' property must have an intial catalog (selected database).");
 
             var model = new Model(this.Connection.Database, config);
 

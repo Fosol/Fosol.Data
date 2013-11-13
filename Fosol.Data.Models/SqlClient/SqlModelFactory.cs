@@ -37,6 +37,15 @@ namespace Fosol.Data.Models.SqlClient
             : base(connection)
         {
         }
+
+        /// <summary>
+        /// Creates a new instance of a SqlModelFactory object.
+        /// </summary>
+        /// <param name="config">DataModelElement object with configuration details.</param>
+        public SqlModelFactory(Configuration.DataModelElement config)
+            : base(config)
+        {
+        }
         #endregion
 
         #region Methods

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace Fosol.Data.Models.Configuration
         : ConfigurationElement
     {
         #region Variables
+        private DbConnection _Connection;
         #endregion
 
         #region Properties
@@ -35,14 +37,14 @@ namespace Fosol.Data.Models.Configuration
             set { this["namespace"] = value; }
         }
 
-        [ConfigurationProperty("providerName", IsRequired = true)]
+        [ConfigurationProperty("providerName", IsRequired = false)]
         public string ProviderName
         {
             get { return (string)this["providerName"]; }
             set { this["providerName"] = value; }
         }
 
-        [ConfigurationProperty("connectionString", IsRequired = true)]
+        [ConfigurationProperty("connectionString", IsRequired = false)]
         public string ConnectionString
         {
             get { return (string)this["connectionString"]; }
@@ -75,6 +77,27 @@ namespace Fosol.Data.Models.Configuration
         {
             get { return (RoutineElementCollection)this["routines"]; }
             private set { this["routines"] = value; }
+        }
+
+        /// <summary>
+        /// get - A DbConnection object this model will use to connect to the database.  The type is determined by the ProviderName property.
+        /// </summary>
+        public DbConnection Connection
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this.ProviderName) || string.IsNullOrEmpty(this.ConnectionString))
+                    return null;
+
+                if (_Connection != null)
+                    return _Connection;
+
+                // Create a new Connection object for the specified provider.
+                var factory = DbProviderFactories.GetFactory(this.ProviderName);
+                _Connection = factory.CreateConnection();
+                _Connection.ConnectionString = this.ConnectionString;
+                return _Connection;
+            }
         }
         #endregion
 
