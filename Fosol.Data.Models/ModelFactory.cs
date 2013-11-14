@@ -33,26 +33,16 @@ namespace Fosol.Data.Models
         /// <summary>
         /// Creates a new instance of a ModelFactory object.
         /// </summary>
-        private ModelFactory(string modelName)
-        {
-            this.Configuration = new Configuration.DataModelElement();
-        }
-
-        /// <summary>
-        /// Creates a new instance of a ModelFactory object.
-        /// </summary>
         /// <exception cref="System.ArgumentException">Parameters 'providerInvariantName' and 'connectionString' cannot be empty.</exception>
         /// <exception cref="System.ArgumentNullException">Parameters 'providerInvariantName' and 'connectionString' cannot be null.</exception>
         /// <param name="providerInvariantName">A valid provider name.</param>
         /// <param name="connectionString">A connection string or the name in the configuration file.</param>
         protected ModelFactory(string providerInvariantName, string connectionString)
-            : this()
         {
             Assert.IsNotNullOrEmpty(providerInvariantName, "providerInvariantName");
             Assert.IsNotNullOrEmpty(connectionString, "connectionString");
 
             var cs = System.Configuration.ConfigurationManager.ConnectionStrings[connectionString];
-
             if (cs == null)
             {
                 // Figure out which DbConnection type to use based on the provider.
@@ -70,6 +60,11 @@ namespace Fosol.Data.Models
                 this.Connection = factory.CreateConnection();
                 this.Connection.ConnectionString = cs.ConnectionString;
             }
+
+            if (string.IsNullOrEmpty(this.Connection.Database))
+                throw new Exceptions.ModelFactoryException("The 'Connection' property must have an intial catalog (selected database).");
+
+            this.Configuration = new Configuration.DataModelElement(this.Connection.Database);
         }
 
         /// <summary>
@@ -78,11 +73,15 @@ namespace Fosol.Data.Models
         /// <exception cref="System.ArgumentNullException">Parameter 'connection' cannot be null.</exception>
         /// <param name="connection">DbConnection object.</param>
         public ModelFactory(DbConnection connection)
-            : this()
         {
             Assert.IsNotNull(connection, "connection");
 
             this.Connection = connection;
+
+            if (string.IsNullOrEmpty(this.Connection.Database))
+                throw new Exceptions.ModelFactoryException("The 'Connection' property must have an intial catalog (selected database).");
+
+            this.Configuration = new Configuration.DataModelElement(this.Connection.Database);
         }
 
         /// <summary>
@@ -96,6 +95,34 @@ namespace Fosol.Data.Models
 
             this.Configuration = config;
             this.Connection = config.Connection;
+
+            if (string.IsNullOrEmpty(this.Connection.Database))
+                throw new Exceptions.ModelFactoryException("The 'Connection' property must have an intial catalog (selected database).");
+        }
+
+        /// <summary>
+        /// Creates a new instance of a ModelFactory object.
+        /// Initializes the properties Configuration and Connection with the section in the application configuration file.
+        /// </summary>
+        /// <param name="modelName">The name to identify the datamodel within the configuration section.</param>
+        public ModelFactory(string modelName)
+        {
+            Assert.IsNotNullOrEmpty(modelName, "modelName");
+
+            var config = (Configuration.ModelFactorySection)System.Configuration.ConfigurationManager.GetSection(Fosol.Data.Models.Configuration.ModelFactorySection.DefaultSectionName);
+
+            if (config == null)
+                throw new Exceptions.ModelFactoryException(string.Format("Configuration section '{0}' missing.", Fosol.Data.Models.Configuration.ModelFactorySection.DefaultSectionName));
+
+            this.Configuration = config.DataModels[modelName];
+
+            if (this.Configuration == null)
+                throw new Exceptions.ModelFactoryException(string.Format("Configuration section does not contain a datamodel named '{0}'.", modelName));
+
+            this.Connection = this.Configuration.Connection;
+
+            if (string.IsNullOrEmpty(this.Connection.Database))
+                throw new Exceptions.ModelFactoryException("The 'Connection' property must have an intial catalog (selected database).");
         }
         #endregion
 
@@ -103,24 +130,15 @@ namespace Fosol.Data.Models
         /// <summary>
         /// Builds a data Model object that represents the database specified for this ModelFactory.
         /// </summary>
-        /// <param name="config">DataModelElement configuration object used to control how the model will be built.</param>
         /// <returns>A new instance of a Model.</returns>
-        public Model Build(Configuration.DataModelElement config = null)
+        public Model Build()
         {
-            // You have initialized the ModelFactory without a valid DataModelElement configuration object.
-            // Either update the configuration information, or set the Connection value.
-            if ((this.Connection == null && config == null) || (this.Connection == null && config.Connection == null))
-                Assert.IsNotNull(this.Connection, "Connection", "The 'Connection' property cannot be null.");
-            
-            // Use the DataModelElement configuration information if the Connection hasn't already be initialized.
-            if (this.Connection == null)
-                this.Connection = config.Connection;
 
             // A database has not been selected.
             if (string.IsNullOrEmpty(this.Connection.Database))
                 throw new Exceptions.ModelFactoryException("The 'Connection' property must have an intial catalog (selected database).");
 
-            var model = new Model(this.Connection.Database, config);
+            var model = new Model(this.Connection.Database);
 
             try
             {

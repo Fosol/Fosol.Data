@@ -13,7 +13,7 @@ namespace Fosol.Data.Models.TestConsole
         {
             var config = (Configuration.ModelFactorySection)System.Configuration.ConfigurationManager.GetSection("fosol.datamodel");
             var factory = new SqlModelFactory("FosolTeamDb");
-            var model = factory.Build(config.DataModels["Fosol.Team.Db"]);
+            var model = factory.Build();
         }
     }
 }

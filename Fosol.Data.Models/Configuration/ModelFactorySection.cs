@@ -11,6 +11,7 @@ namespace Fosol.Data.Models.Configuration
         : ConfigurationSection
     {
         #region Variables
+        public const string DefaultSectionName = "fosol.datamodel";
         #endregion
 
         #region Properties
