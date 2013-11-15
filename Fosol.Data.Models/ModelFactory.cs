@@ -102,14 +102,14 @@ namespace Fosol.Data.Models
 
         /// <summary>
         /// Creates a new instance of a ModelFactory object.
-        /// Initializes the properties Configuration and Connection with the section in the application configuration file.
+        /// This constructor will only work if there is a ModelFactorySection configuration within your application and it contains a datamodel with the specified name.
         /// </summary>
         /// <param name="modelName">The name to identify the datamodel within the configuration section.</param>
         public ModelFactory(string modelName)
         {
             Assert.IsNotNullOrEmpty(modelName, "modelName");
 
-            var config = (Configuration.ModelFactorySection)System.Configuration.ConfigurationManager.GetSection(Fosol.Data.Models.Configuration.ModelFactorySection.DefaultSectionName);
+            var config = Fosol.Data.Models.Configuration.ModelFactorySection.GetDefault();
 
             if (config == null)
                 throw new Exceptions.ModelFactoryException(string.Format("Configuration section '{0}' missing.", Fosol.Data.Models.Configuration.ModelFactorySection.DefaultSectionName));
@@ -133,7 +133,6 @@ namespace Fosol.Data.Models
         /// <returns>A new instance of a Model.</returns>
         public Model Build()
         {
-
             // A database has not been selected.
             if (string.IsNullOrEmpty(this.Connection.Database))
                 throw new Exceptions.ModelFactoryException("The 'Connection' property must have an intial catalog (selected database).");
@@ -144,9 +143,75 @@ namespace Fosol.Data.Models
             {
                 this.Connection.Open();
 
-                BuildTables(model);
-                BuildViews(model);
-                BuildRoutines(model);
+                // Based on the configuration import the appropriate tables into the model.
+                var config_tables = this.Configuration.Tables;
+                if (config_tables.Import == Models.Configuration.ImportOption.All || config_tables.Count > 0)
+                {
+                    // Fetch the tables from the datasource.
+                    foreach (var table in BuildTables())
+                    {
+                        var table_config = config_tables.FirstOrDefault(t => t.Name.Equals(table.Name, StringComparison.InvariantCultureIgnoreCase));
+
+                        // Do not include tables that have not been configured, or have been configued to be ignored.
+                        if (config_tables.Import == Models.Configuration.ImportOption.Configured && (table_config == null || table_config.Action == Models.Configuration.ImportAction.Ignore))
+                            continue;
+                        else if (config_tables.Import == Models.Configuration.ImportOption.All && table_config == null)
+                            model.Entities.Add(table);
+                        else if (table_config != null)
+                        {
+                            // Update the table with the configuration properties.
+                            table.Alias = table_config.Alias;
+
+                            // Only import the appropriate constraints.
+                            if (table_config.Constraints.Import == Models.Configuration.ImportOption.All || table_config.Constraints.Count > 0)
+                            {
+                                foreach (var constraint in table.Constraints)
+                                {
+                                    var constraint_config = table_config.Constraints.FirstOrDefault(c => c.Name.Equals(constraint.Name, StringComparison.InvariantCultureIgnoreCase));
+
+                                    if (constraint_config != null)
+                                    {
+                                        if (constraint_config.Action == Models.Configuration.ImportAction.Import)
+                                        {
+                                            // Update the constraint with the configuration properties.
+                                            constraint.Alias = constraint_config.Alias;
+                                        }
+                                        else
+                                        {
+                                            // This constraint was configured to be ignored.
+                                            table.Constraints.Remove(constraint);
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Only import the appropriate columns.
+                            if (table_config.Columns.Import == Models.Configuration.ImportOption.All || table_config.Columns.Count > 0)
+                            {
+                                foreach (var column in table.Columns)
+                                {
+                                    var column_config = table_config.Columns.FirstOrDefault(c => c.Name.Equals(column.Name, StringComparison.InvariantCultureIgnoreCase));
+
+                                    if (column_config != null)
+                                    {
+                                        if (column_config.Action == Models.Configuration.ImportAction.Import)
+                                        {
+                                            // Update the column with the configuration properties.
+                                            column.Alias = column_config.Alias;
+                                        }
+                                        else
+                                        {
+                                            // This column was configured to be ignored.
+                                            table.Columns.Remove(column);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                model.Entities.Merge(BuildViews());
+                model.Entities.Merge(BuildRoutines());
             }
             finally
             {
@@ -159,20 +224,17 @@ namespace Fosol.Data.Models
         /// <summary>
         /// Extract the tables from the database and add them to the model.
         /// </summary>
-        /// <param name="model">Model object to update with tables.</param>
-        protected abstract void BuildTables(Model model);
+        protected abstract EntityCollection BuildTables();
 
         /// <summary>
         /// Extract the views from the database and add them to the model.
         /// </summary>
-        /// <param name="model">Model object to update with views.</param>
-        protected abstract void BuildViews(Model model);
+        protected abstract EntityCollection BuildViews();
 
         /// <summary>
         /// Extract the routines (stored procedures) from the database and add them to the model.
         /// </summary>
-        /// <param name="model">Model object to update with routines.</param>
-        protected abstract void BuildRoutines(Model model);
+        protected abstract EntityCollection BuildRoutines();
 
         /// <summary>
         /// Extract the constraint type and return an enum value.

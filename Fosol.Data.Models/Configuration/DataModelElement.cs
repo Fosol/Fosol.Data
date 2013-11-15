@@ -16,6 +16,9 @@ namespace Fosol.Data.Models.Configuration
         #endregion
 
         #region Properties
+        /// <summary>
+        /// get/set - A unique name to identify this datamodel.
+        /// </summary>
         [ConfigurationProperty("name", IsKey = true, IsRequired = true)]
         public string Name
         {
@@ -23,6 +26,9 @@ namespace Fosol.Data.Models.Configuration
             set { this["name"] = value; }
         }
 
+        /// <summary>
+        /// get/set - An alias to use to identify this datamodel.
+        /// </summary>
         [ConfigurationProperty("alias", IsRequired = false)]
         public string Alias
         {
@@ -30,6 +36,9 @@ namespace Fosol.Data.Models.Configuration
             set { this["alias"] = value; }
         }
 
+        /// <summary>
+        /// get/set - The namespace to use when creating the datamodel.
+        /// </summary>
         [ConfigurationProperty("namespace", IsRequired = false)]
         public string Namespace
         {
@@ -37,6 +46,9 @@ namespace Fosol.Data.Models.Configuration
             set { this["namespace"] = value; }
         }
 
+        /// <summary>
+        /// get/set - The data provider type name for the datasource.
+        /// </summary>
         [ConfigurationProperty("providerName", IsRequired = false)]
         public string ProviderName
         {
@@ -44,6 +56,9 @@ namespace Fosol.Data.Models.Configuration
             set { this["providerName"] = value; }
         }
 
+        /// <summary>
+        /// get/set - The connection string for the datasource.
+        /// </summary>
         [ConfigurationProperty("connectionString", IsRequired = false)]
         public string ConnectionString
         {
@@ -51,6 +66,9 @@ namespace Fosol.Data.Models.Configuration
             set { this["connectionString"] = value; }
         }
 
+        /// <summary>
+        /// get/set - Datamodel rules to follow when building.
+        /// </summary>
         [ConfigurationProperty("rules", IsRequired = false)]
         public RulesElement Rules
         {
@@ -58,6 +76,9 @@ namespace Fosol.Data.Models.Configuration
             set { this["rules"] = value; }
         }
 
+        /// <summary>
+        /// get/set - Collection of tables from the datasource.
+        /// </summary>
         [ConfigurationProperty("tables", IsRequired = false)]
         public TableElementCollection Tables
         {
@@ -65,6 +86,9 @@ namespace Fosol.Data.Models.Configuration
             private set { this["tables"] = value; }
         }
 
+        /// <summary>
+        /// get/set - Collection of views from the datasource.
+        /// </summary>
         [ConfigurationProperty("views", IsRequired = false)]
         public ViewElementCollection Views
         {
@@ -72,6 +96,9 @@ namespace Fosol.Data.Models.Configuration
             private set { this["views"] = value; }
         }
 
+        /// <summary>
+        /// get/set - Collection of routines from the datasource.
+        /// </summary>
         [ConfigurationProperty("routines", IsRequired = false)]
         public RoutineElementCollection Routines
         {
@@ -92,16 +119,32 @@ namespace Fosol.Data.Models.Configuration
                 if (_Connection != null)
                     return _Connection;
 
-                // Create a new Connection object for the specified provider.
-                var factory = DbProviderFactories.GetFactory(this.ProviderName);
-                _Connection = factory.CreateConnection();
-                _Connection.ConnectionString = this.ConnectionString;
-                return _Connection;
+                // Check if the ConnectionString value is a name from the ConnectionString configuration section.
+                var cs = System.Configuration.ConfigurationManager.ConnectionStrings[this.ConnectionString];
+
+                if (cs != null)
+                {
+                    var factory = DbProviderFactories.GetFactory(cs.ProviderName);
+                    _Connection = factory.CreateConnection();
+                    _Connection.ConnectionString = cs.ConnectionString;
+                    return _Connection;
+                }
+                else
+                {
+                    // Create a new Connection object for the specified provider.
+                    var factory = DbProviderFactories.GetFactory(this.ProviderName);
+                    _Connection = factory.CreateConnection();
+                    _Connection.ConnectionString = this.ConnectionString;
+                    return _Connection;
+                }
             }
         }
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Creates a new instance of a DataModelElement object.
+        /// </summary>
         public DataModelElement()
         {
             this.Tables = new TableElementCollection();
@@ -109,6 +152,10 @@ namespace Fosol.Data.Models.Configuration
             this.Routines = new RoutineElementCollection();
         }
 
+        /// <summary>
+        /// Creates a new instance of a DataModelElement object.
+        /// </summary>
+        /// <param name="name">Unique name to identify this datamodel.</param>
         public DataModelElement(string name)
             : this()
         {

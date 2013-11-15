@@ -52,38 +52,35 @@ namespace Fosol.Data.Models.SqlClient
         /// <summary>
         /// Extract the tables from the database and add them to the model.
         /// </summary>
-        /// <param name="model">Model object to update with tables.</param>
-        protected override void BuildTables(Model model)
+        protected override EntityCollection BuildTables()
         {
-            BuildEntities(model, EntityType.Table);
+            return BuildEntities(EntityType.Table);
         }
 
         /// <summary>
         /// Extract the views from the database and add them to the model.
         /// </summary>
-        /// <param name="model">Model object to update with views.</param>
-        protected override void BuildViews(Model model)
+        protected override EntityCollection BuildViews()
         {
-            BuildEntities(model, EntityType.View);
+            return BuildEntities(EntityType.View);
         }
 
         /// <summary>
         /// Extract the routines (stored procedures) from the database and add them to the model.
         /// </summary>
-        /// <param name="model">Model object to update with routines.</param>
-        protected override void BuildRoutines(Model model)
+        protected override EntityCollection BuildRoutines()
         {
-
+            return null;
         }
 
         /// <summary>
         /// Since Sql Server keeps both tables and views in the same way this method can perform both builds.
         /// </summary>
-        /// <param name="model">Model object to update with tables or views.</param>
         /// <param name="entityType">The only relevant EntityType are Table and View.</param>
-        private void BuildEntities(Model model, EntityType entityType)
+        private EntityCollection BuildEntities(EntityType entityType)
         {
             var connection = (SqlConnection)this.Connection;
+            var entities = new EntityCollection();
 
             // Create a model for each table in the database.
             using (var cmd = entityType == EntityType.Table ? GetTables(connection) : GetViews(connection))
@@ -92,16 +89,17 @@ namespace Fosol.Data.Models.SqlClient
                 {
                     while (reader.Read())
                     {
-                        var entity = new Entity((string)reader["TABLE_NAME"], (string)reader["TABLE_TYPE"]);
+                        var name = (string)reader["TABLE_NAME"];
+                        var entity = new Entity(name, (string)reader["TABLE_TYPE"]);
                         entity.Catalog = (string)reader["TABLE_CATALOG"];
                         entity.Schema = (string)reader["TABLE_SCHEMA"];
-                        model.Entities.Add(entity);
+                        entities.Add(entity);
                     }
                 }
             }
 
             // Foreach entity attach its columns.
-            foreach (var entity in model.Entities)
+            foreach (var entity in entities)
             {
                 // Add the columns to the model.
                 using (var cmd = GetColumns(entity.Name, connection))
@@ -201,6 +199,8 @@ namespace Fosol.Data.Models.SqlClient
                     }
                 }
             }
+
+            return entities;
         }
 
         /// <summary>

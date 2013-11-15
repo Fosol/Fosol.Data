@@ -58,12 +58,11 @@
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
       <xs:element name="add" type="TableElement"/>
     </xs:sequence>
-    <xs:attribute name="import" type="ImportOption" default="None"/>
+    <xs:attribute name="import" type="ImportOption" default="All"/>
   </xs:complexType>
 
   <xs:simpleType name="ImportOption">
     <xs:restriction base="xs:string">
-      <xs:enumeration value="None"/>
       <xs:enumeration value="All"/>
       <xs:enumeration value="Configured"/>
     </xs:restriction>
@@ -90,6 +89,7 @@
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
       <xs:element name="add" type="ColumnElement"/>
     </xs:sequence>
+    <xs:attribute name="import" type="ImportOption" default="All"/>
   </xs:complexType>
 
   <xs:complexType name="ColumnElement">
@@ -102,6 +102,7 @@
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
       <xs:element name="add" type="ConstraintElement"/>
     </xs:sequence>
+    <xs:attribute name="import" type="ImportOption" default="All"/>
   </xs:complexType>
 
   <xs:complexType name="ConstraintElement">
@@ -112,10 +113,10 @@
   </xs:complexType>
   
   <xs:complexType name="ViewElementCollection">
-    <xs:attribute name="import" type="ImportOption" default="None"/>
+    <xs:attribute name="import" type="ImportOption" default="All"/>
   </xs:complexType>
 
   <xs:complexType name="RoutineElementCollection">
-    <xs:attribute name="import" type="ImportOption" default="None"/>
+    <xs:attribute name="import" type="ImportOption" default="All"/>
   </xs:complexType>
 </xs:schema>

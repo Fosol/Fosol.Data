@@ -183,6 +183,18 @@ namespace Fosol.Data.Models
         }
 
         /// <summary>
+        /// Removes the column from the collection.
+        /// </summary>
+        /// <param name="column">Column object to remove from collection.</param>
+        /// <returns>True if the column was removed from the collection.</returns>
+        public bool Remove(Column column)
+        {
+            Assert.IsNotNull(column, "column");
+
+            return Remove(column.Name);
+        }
+
+        /// <summary>
         /// Get the enumerator for this collection.
         /// </summary>
         /// <returns>IEnumerator object.</returns>

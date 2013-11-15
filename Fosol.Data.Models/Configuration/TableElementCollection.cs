@@ -17,7 +17,7 @@ namespace Fosol.Data.Models.Configuration
         #endregion
 
         #region Properties
-        [ConfigurationProperty("import", IsRequired = false, DefaultValue = ImportOption.None)]
+        [ConfigurationProperty("import", IsRequired = false, DefaultValue = ImportOption.All)]
         public ImportOption Import
         {
             get { return (ImportOption)this.Attribute("import"); }

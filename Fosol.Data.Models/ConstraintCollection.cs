@@ -19,7 +19,7 @@ namespace Fosol.Data.Models
 
         #region Properties
         /// <summary>
-        /// get - Number of entity objects within the collection.
+        /// get - Number of constraint objects within the collection.
         /// </summary>
         public int Count { get { return _Constraints.Count; } }
 
@@ -52,9 +52,9 @@ namespace Fosol.Data.Models
         /// <returns>IEnumerator object.</returns>
         public IEnumerator<Constraint> GetEnumerator()
         {
-            foreach (var entity in _Constraints.Select(e => e.Value))
+            foreach (var constraint in _Constraints.Select(e => e.Value))
             {
-                yield return entity;
+                yield return constraint;
             }
         }
 
@@ -68,24 +68,24 @@ namespace Fosol.Data.Models
         }
 
         /// <summary>
-        /// Add the entity to the collection.
+        /// Add the constraint to the collection.
         /// </summary>
-        /// <exception cref="System.ArgumentNullException">Parameter 'entity' cannot be null.</exception>
-        /// <param name="entity">Constraint object to add.</param>
-        public void Add(Constraint entity)
+        /// <exception cref="System.ArgumentNullException">Parameter 'constraint' cannot be null.</exception>
+        /// <param name="constraint">Constraint object to add.</param>
+        public void Add(Constraint constraint)
         {
-            Assert.IsNotNull(entity, "entity");
+            Assert.IsNotNull(constraint, "constraint");
 
-            _Constraints.Add(entity.Name, entity);
+            _Constraints.Add(constraint.Name, constraint);
         }
 
         /// <summary>
-        /// Remove the entity from the collection.
+        /// Remove the constraint from the collection.
         /// </summary>
         /// <exception cref="System.ArgumentException">Parameter 'name' cannot be empty.</exception>
         /// <exception cref="System.ArgumentNullException">Parameter 'name' cannot be null.</exception>
-        /// <param name="name">Name to identify the entity.</param>
-        /// <returns>True if the entity was removed.</returns>
+        /// <param name="name">Name to identify the constraint.</param>
+        /// <returns>True if the constraint was removed.</returns>
         public bool Remove(string name)
         {
             Assert.IsNotNullOrEmpty(name, "name");
@@ -94,10 +94,23 @@ namespace Fosol.Data.Models
         }
 
         /// <summary>
-        /// Determines whether the collection contains an entity with the specified name.
+        /// Remove the constraint from the collection.
         /// </summary>
-        /// <param name="name">Name to identify the entity.</param>
-        /// <returns>True of the entity exists with the specified name.</returns>
+        /// <exception cref="System.ArgumentNullException">Parameter 'constraint' cannot be null.</exception>
+        /// <param name="constraint">Constraint to remove from this collection.</param>
+        /// <returns>True if the constraint was removed.</returns>
+        public bool Remove(Constraint constraint)
+        {
+            Assert.IsNotNull(constraint, "constraint");
+
+            return _Constraints.Remove(constraint.Name);
+        }
+
+        /// <summary>
+        /// Determines whether the collection contains an constraint with the specified name.
+        /// </summary>
+        /// <param name="name">Name to identify the constraint.</param>
+        /// <returns>True of the constraint exists with the specified name.</returns>
         public bool ContainsConstraint(string name)
         {
             return _Constraints.ContainsKey(name);

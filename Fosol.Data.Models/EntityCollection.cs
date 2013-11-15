@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fosol.Common.Validation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -72,7 +73,23 @@ namespace Fosol.Data.Models
         /// <param name="entity">Entity object to add.</param>
         public void Add(Entity entity)
         {
+            Assert.IsNotNull(entity, "entity");
+
             _Entities.Add(entity.Name, entity);
+        }
+
+        /// <summary>
+        /// Merge the specified collection into this EntityCollection.
+        /// </summary>
+        /// <param name="entities">EntityCollection object.</param>
+        public void Merge(EntityCollection entities)
+        {
+            Assert.IsNotNull(entities, "entities");
+
+            foreach (var entity in entities)
+            {
+                _Entities.Add(entity.Name, entity);
+            }
         }
 
         /// <summary>
@@ -82,7 +99,21 @@ namespace Fosol.Data.Models
         /// <returns>True if the entity was removed.</returns>
         public bool Remove(string name)
         {
+            Assert.IsNotNullOrEmpty(name, "name");
+
             return _Entities.Remove(name);
+        }
+
+        /// <summary>
+        /// Removes the entity from the collection.
+        /// </summary>
+        /// <param name="entity">Entity object to remove from the collection.</param>
+        /// <returns>True if the entity was removed.</returns>
+        public bool Remove(Entity entity)
+        {
+            Assert.IsNotNull(entity, "entity");
+
+            return _Entities.Remove(entity.Name);
         }
 
         /// <summary>
@@ -101,5 +132,6 @@ namespace Fosol.Data.Models
 
         #region Events
         #endregion
+
     }
 }

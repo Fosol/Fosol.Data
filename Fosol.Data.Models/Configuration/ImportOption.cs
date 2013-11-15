@@ -12,16 +12,12 @@ namespace Fosol.Data.Models.Configuration
     public enum ImportOption
     {
         /// <summary>
-        /// Do not import any of these entities.
-        /// </summary>
-        None = 0,
-        /// <summary>
         /// Import all the entities.
         /// </summary>
-        All = 1,
+        All = 0,
         /// <summary>
         /// Import only those configured.
         /// </summary>
-        Configured = 2
+        Configured = 1
     }
 }
