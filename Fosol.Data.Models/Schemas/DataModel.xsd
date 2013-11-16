@@ -9,13 +9,19 @@
 
   <xs:element name="fosol.datamodel">
     <xs:complexType>
-      <xs:sequence minOccurs="1" maxOccurs="unbounded">
-        <xs:element name="add" type="DataModel"/>
+      <xs:sequence minOccurs="1" maxOccurs="1">
+        <xs:element name="datamodels" type="DataModelElementCollection"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
 
-  <xs:complexType name="DataModel">
+  <xs:complexType name="DataModelElementCollection">
+    <xs:sequence minOccurs="1" maxOccurs="unbounded">
+      <xs:element name="add" type="DataModelElement"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DataModelElement">
     <xs:sequence>
       <xs:element name="rules" type="RulesElement" minOccurs="0"/>
       <xs:element name="tables" type="TableElementCollection" minOccurs="0"/>

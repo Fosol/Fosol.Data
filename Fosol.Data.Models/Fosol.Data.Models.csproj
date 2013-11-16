@@ -7,8 +7,8 @@
     <ProjectGuid>{B02E71F3-1069-488D-B50D-B1B62A687023}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Fosol.Common.Data</RootNamespace>
-    <AssemblyName>Fosol.Common.Data</AssemblyName>
+    <RootNamespace>Fosol.Data.Models</RootNamespace>
+    <AssemblyName>Fosol.Data.Models</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

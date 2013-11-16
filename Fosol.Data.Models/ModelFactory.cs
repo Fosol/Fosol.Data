@@ -165,11 +165,15 @@ namespace Fosol.Data.Models
                             // Only import the appropriate constraints.
                             if (table_config.Constraints.Import == Models.Configuration.ImportOption.All || table_config.Constraints.Count > 0)
                             {
-                                foreach (var constraint in table.Constraints)
+                                var names = table.Constraints.GetNames();
+                                foreach (var name in names)
                                 {
+                                    var constraint = table.Constraints[name];
                                     var constraint_config = table_config.Constraints.FirstOrDefault(c => c.Name.Equals(constraint.Name, StringComparison.InvariantCultureIgnoreCase));
 
-                                    if (constraint_config != null)
+                                    if (constraint_config == null && table_config.Constraints.Import == Models.Configuration.ImportOption.Configured)
+                                        table.Constraints.Remove(constraint);
+                                    else if (constraint_config != null)
                                     {
                                         if (constraint_config.Action == Models.Configuration.ImportAction.Import)
                                         {
@@ -188,11 +192,15 @@ namespace Fosol.Data.Models
                             // Only import the appropriate columns.
                             if (table_config.Columns.Import == Models.Configuration.ImportOption.All || table_config.Columns.Count > 0)
                             {
-                                foreach (var column in table.Columns)
+                                var names = table.Columns.GetNames();
+                                foreach (var name in names)
                                 {
+                                    var column = table.Columns[name];
                                     var column_config = table_config.Columns.FirstOrDefault(c => c.Name.Equals(column.Name, StringComparison.InvariantCultureIgnoreCase));
 
-                                    if (column_config != null)
+                                    if (column_config == null && table_config.Columns.Import == Models.Configuration.ImportOption.Configured)
+                                        table.Columns.Remove(column);
+                                    else if (column_config != null)
                                     {
                                         if (column_config.Action == Models.Configuration.ImportAction.Import)
                                         {
@@ -207,11 +215,13 @@ namespace Fosol.Data.Models
                                     }
                                 }
                             }
+
+                            model.Entities.Add(table);
                         }
                     }
                 }
-                model.Entities.Merge(BuildViews());
-                model.Entities.Merge(BuildRoutines());
+                //model.Entities.Merge(BuildViews());
+                //model.Entities.Merge(BuildRoutines());
             }
             finally
             {

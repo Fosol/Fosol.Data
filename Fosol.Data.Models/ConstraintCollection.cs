@@ -47,6 +47,16 @@ namespace Fosol.Data.Models
 
         #region Methods
         /// <summary>
+        /// Get a collection of keys.
+        /// </summary>
+        /// <returns></returns>
+        public string[] GetNames()
+        {
+            return _Constraints.Select(c => c.Key).ToArray();
+        }
+
+
+        /// <summary>
         /// Get the enumerator for this ConstraintCollection.
         /// </summary>
         /// <returns>IEnumerator object.</returns>

@@ -67,6 +67,15 @@ namespace Fosol.Data.Models
 
         #region Methods
         /// <summary>
+        /// Get a collection of keys.
+        /// </summary>
+        /// <returns></returns>
+        public string[] GetNames()
+        {
+            return _Columns.Select(c => c.Key).ToArray();
+        }
+
+        /// <summary>
         /// Determine if the collection contains a Column with the specified name.
         /// </summary>
         /// <param name="name">Name to identify the column.</param>

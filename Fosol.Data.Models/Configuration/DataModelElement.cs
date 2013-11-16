@@ -113,7 +113,7 @@ namespace Fosol.Data.Models.Configuration
         {
             get
             {
-                if (string.IsNullOrEmpty(this.ProviderName) || string.IsNullOrEmpty(this.ConnectionString))
+                if (string.IsNullOrEmpty(this.ConnectionString))
                     return null;
 
                 if (_Connection != null)
