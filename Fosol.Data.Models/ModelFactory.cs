@@ -131,7 +131,7 @@ namespace Fosol.Data.Models
         /// Builds a data Model object that represents the database specified for this ModelFactory.
         /// </summary>
         /// <returns>A new instance of a Model.</returns>
-        public Model Build()
+        public Model Download()
         {
             // A database has not been selected.
             if (string.IsNullOrEmpty(this.Connection.Database))
@@ -143,85 +143,9 @@ namespace Fosol.Data.Models
             {
                 this.Connection.Open();
 
-                // Based on the configuration import the appropriate tables into the model.
-                var config_tables = this.Configuration.Tables;
-                if (config_tables.Import == Models.Configuration.ImportOption.All || config_tables.Count > 0)
-                {
-                    // Fetch the tables from the datasource.
-                    foreach (var table in BuildTables())
-                    {
-                        var table_config = config_tables.FirstOrDefault(t => t.Name.Equals(table.Name, StringComparison.InvariantCultureIgnoreCase));
-
-                        // Do not include tables that have not been configured, or have been configued to be ignored.
-                        if (config_tables.Import == Models.Configuration.ImportOption.Configured && (table_config == null || table_config.Action == Models.Configuration.ImportAction.Ignore))
-                            continue;
-                        else if (config_tables.Import == Models.Configuration.ImportOption.All && table_config == null)
-                            model.Entities.Add(table);
-                        else if (table_config != null)
-                        {
-                            // Update the table with the configuration properties.
-                            table.Alias = table_config.Alias;
-
-                            // Only import the appropriate constraints.
-                            if (table_config.Constraints.Import == Models.Configuration.ImportOption.All || table_config.Constraints.Count > 0)
-                            {
-                                var names = table.Constraints.GetNames();
-                                foreach (var name in names)
-                                {
-                                    var constraint = table.Constraints[name];
-                                    var constraint_config = table_config.Constraints.FirstOrDefault(c => c.Name.Equals(constraint.Name, StringComparison.InvariantCultureIgnoreCase));
-
-                                    if (constraint_config == null && table_config.Constraints.Import == Models.Configuration.ImportOption.Configured)
-                                        table.Constraints.Remove(constraint);
-                                    else if (constraint_config != null)
-                                    {
-                                        if (constraint_config.Action == Models.Configuration.ImportAction.Import)
-                                        {
-                                            // Update the constraint with the configuration properties.
-                                            constraint.Alias = constraint_config.Alias;
-                                        }
-                                        else
-                                        {
-                                            // This constraint was configured to be ignored.
-                                            table.Constraints.Remove(constraint);
-                                        }
-                                    }
-                                }
-                            }
-
-                            // Only import the appropriate columns.
-                            if (table_config.Columns.Import == Models.Configuration.ImportOption.All || table_config.Columns.Count > 0)
-                            {
-                                var names = table.Columns.GetNames();
-                                foreach (var name in names)
-                                {
-                                    var column = table.Columns[name];
-                                    var column_config = table_config.Columns.FirstOrDefault(c => c.Name.Equals(column.Name, StringComparison.InvariantCultureIgnoreCase));
-
-                                    if (column_config == null && table_config.Columns.Import == Models.Configuration.ImportOption.Configured)
-                                        table.Columns.Remove(column);
-                                    else if (column_config != null)
-                                    {
-                                        if (column_config.Action == Models.Configuration.ImportAction.Import)
-                                        {
-                                            // Update the column with the configuration properties.
-                                            column.Alias = column_config.Alias;
-                                        }
-                                        else
-                                        {
-                                            // This column was configured to be ignored.
-                                            table.Columns.Remove(column);
-                                        }
-                                    }
-                                }
-                            }
-
-                            model.Entities.Add(table);
-                        }
-                    }
-                }
-                //model.Entities.Merge(BuildViews());
-                //model.Entities.Merge(BuildRoutines());
+                model.Tables.Merge(GetTables());
+                model.Views.Merge(GetViews());
+                model.Routines.Merge(GetRoutines());
             }
             finally
             {
@@ -232,19 +156,36 @@ namespace Fosol.Data.Models
         }
 
         /// <summary>
+        /// Build the datamodel in code.  Generate the code classes based on the configuration.
+        /// </summary>
+        public void Build()
+        {
+            Build(this.Download());
+        }
+
+        /// <summary>
+        /// Build the datamodel in code.  Generate the code classes based on the configuration.
+        /// </summary>
+        /// <param name="model">Model object to build.</param>
+        public void Build(Model model)
+        {
+
+        }
+
+        /// <summary>
         /// Extract the tables from the database and add them to the model.
         /// </summary>
-        protected abstract EntityCollection BuildTables();
+        protected abstract EntityCollection<Table> GetTables();
 
         /// <summary>
         /// Extract the views from the database and add them to the model.
         /// </summary>
-        protected abstract EntityCollection BuildViews();
+        protected abstract EntityCollection<View> GetViews();
 
         /// <summary>
         /// Extract the routines (stored procedures) from the database and add them to the model.
         /// </summary>
-        protected abstract EntityCollection BuildRoutines();
+        protected abstract EntityCollection<Routine> GetRoutines();
 
         /// <summary>
         /// Extract the constraint type and return an enum value.

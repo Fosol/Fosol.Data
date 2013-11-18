@@ -11,7 +11,7 @@ namespace Fosol.Data.Models
     /// An Entity object represents a table or view from a database.
     /// An Entity contains information to recreate a table or view, its columns and constraints.
     /// </summary>
-    public class Entity
+    public abstract class Entity
     {
         #region Variables
         #endregion

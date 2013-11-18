@@ -29,9 +29,19 @@ namespace Fosol.Data.Models
         public string Alias { get; set; }
 
         /// <summary>
-        /// get - A collection of entities within this model.
+        /// get - A collection of tables within this model.
         /// </summary>
-        public EntityCollection Entities { get; private set; }
+        public EntityCollection<Table> Tables { get; private set; }
+
+        /// <summary>
+        /// get - A collection of views within this model.
+        /// </summary>
+        public EntityCollection<View> Views { get; private set; }
+
+        /// <summary>
+        /// get - A collection of routines within this model.
+        /// </summary>
+        public EntityCollection<Routine> Routines { get; private set; }
         #endregion
 
         #region Constructors
@@ -46,19 +56,41 @@ namespace Fosol.Data.Models
             Assert.IsNotNullOrEmpty(name, "name");
 
             this.Name = name;
-            this.Entities = new EntityCollection();
+            this.Tables = new EntityCollection<Table>();
+            this.Views = new EntityCollection<View>();
+            this.Routines = new EntityCollection<Routine>();
         }
         #endregion
 
         #region Methods
         /// <summary>
-        /// Determines if the entity with the specified name already exists within the model.
+        /// Determines if the table with the specified name already exists within the model.
         /// </summary>
-        /// <param name="name">Name to identify the entity.</param>
-        /// <returns>True if the model already contains an entity with the specified name.</returns>
-        public bool ContainsEntity(string name)
+        /// <param name="name">Name to identify the table.</param>
+        /// <returns>True if the model already contains an table with the specified name.</returns>
+        public bool ContainsTable(string name)
         {
-            return this.Entities.ContainsEntity(name);
+            return this.Tables.ContainsEntity(name);
+        }
+        
+        /// <summary>
+        /// Determines if the view with the specified name already exists within the model.
+        /// </summary>
+        /// <param name="name">Name to identify the view.</param>
+        /// <returns>True if the model already contains an view with the specified name.</returns>
+        public bool ContainsView(string name)
+        {
+            return this.Views.ContainsEntity(name);
+        }
+
+        /// <summary>
+        /// Determines if the routine with the specified name already exists within the model.
+        /// </summary>
+        /// <param name="name">Name to identify the routine.</param>
+        /// <returns>True if the model already contains an routine with the specified name.</returns>
+        public bool ContainsRoutine(string name)
+        {
+            return this.Routines.ContainsEntity(name);
         }
         #endregion
 

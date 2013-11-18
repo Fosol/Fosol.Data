@@ -10,11 +10,12 @@ namespace Fosol.Data.Models
     /// <summary>
     /// An EntityCollection contains a collection of Entity objects that represent tables and views.
     /// </summary>
-    public sealed class EntityCollection
-        : IEnumerable<Entity>
+    public sealed class EntityCollection<T>
+        : IEnumerable<T>
+        where T : Entity
     {
         #region Variables
-        private Dictionary<string, Entity> _Entities = new Dictionary<string, Entity>();
+        private Dictionary<string, T> _Entities = new Dictionary<string, T>();
         #endregion
 
         #region Properties
@@ -28,7 +29,7 @@ namespace Fosol.Data.Models
         /// </summary>
         /// <param name="name">Name to identify the entity.</param>
         /// <returns>A entity if it exists.</returns>
-        public Entity this[string name]
+        public T this[string name]
         {
             get { return _Entities[name]; }
         }
@@ -50,7 +51,7 @@ namespace Fosol.Data.Models
         /// Get the enumerator for this EntityCollection.
         /// </summary>
         /// <returns>IEnumerator object.</returns>
-        public IEnumerator<Entity> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
             foreach (var entity in _Entities.Select(e => e.Value))
             {
@@ -71,7 +72,7 @@ namespace Fosol.Data.Models
         /// Add the entity to the collection.
         /// </summary>
         /// <param name="entity">Entity object to add.</param>
-        public void Add(Entity entity)
+        public void Add(T entity)
         {
             Assert.IsNotNull(entity, "entity");
 
@@ -82,7 +83,7 @@ namespace Fosol.Data.Models
         /// Merge the specified collection into this EntityCollection.
         /// </summary>
         /// <param name="entities">EntityCollection object.</param>
-        public void Merge(EntityCollection entities)
+        public void Merge(EntityCollection<T> entities)
         {
             Assert.IsNotNull(entities, "entities");
 
@@ -109,7 +110,7 @@ namespace Fosol.Data.Models
         /// </summary>
         /// <param name="entity">Entity object to remove from the collection.</param>
         /// <returns>True if the entity was removed.</returns>
-        public bool Remove(Entity entity)
+        public bool Remove(T entity)
         {
             Assert.IsNotNull(entity, "entity");
 

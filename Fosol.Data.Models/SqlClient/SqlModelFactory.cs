@@ -52,45 +52,20 @@ namespace Fosol.Data.Models.SqlClient
         /// <summary>
         /// Extract the tables from the database and add them to the model.
         /// </summary>
-        protected override EntityCollection BuildTables()
-        {
-            return BuildEntities(EntityType.Table);
-        }
-
-        /// <summary>
-        /// Extract the views from the database and add them to the model.
-        /// </summary>
-        protected override EntityCollection BuildViews()
-        {
-            return BuildEntities(EntityType.View);
-        }
-
-        /// <summary>
-        /// Extract the routines (stored procedures) from the database and add them to the model.
-        /// </summary>
-        protected override EntityCollection BuildRoutines()
-        {
-            return null;
-        }
-
-        /// <summary>
-        /// Since Sql Server keeps both tables and views in the same way this method can perform both builds.
-        /// </summary>
-        /// <param name="entityType">The only relevant EntityType are Table and View.</param>
-        private EntityCollection BuildEntities(EntityType entityType)
+        protected override EntityCollection<Table> GetTables()
         {
             var connection = (SqlConnection)this.Connection;
-            var entities = new EntityCollection();
+            var entities = new EntityCollection<Table>();
 
             // Create a model for each table in the database.
-            using (var cmd = entityType == EntityType.Table ? GetTables(connection) : GetViews(connection))
+            using (var cmd = GetTables(connection))
             {
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
                         var name = (string)reader["TABLE_NAME"];
-                        var entity = new Entity(name, (string)reader["TABLE_TYPE"]);
+                        var entity = new Table(name, (string)reader["TABLE_TYPE"]);
                         entity.Catalog = (string)reader["TABLE_CATALOG"];
                         entity.Schema = (string)reader["TABLE_SCHEMA"];
                         entities.Add(entity);
@@ -201,6 +176,143 @@ namespace Fosol.Data.Models.SqlClient
             }
 
             return entities;
+        }
+
+        /// <summary>
+        /// Extract the views from the database and add them to the model.
+        /// </summary>
+        protected override EntityCollection<View> GetViews()
+        {
+            var connection = (SqlConnection)this.Connection;
+            var entities = new EntityCollection<View>();
+
+            // Create a model for each table in the database.
+            using (var cmd = GetViews(connection))
+            {
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var name = (string)reader["TABLE_NAME"];
+                        var entity = new View(name, (string)reader["TABLE_TYPE"]);
+                        entity.Catalog = (string)reader["TABLE_CATALOG"];
+                        entity.Schema = (string)reader["TABLE_SCHEMA"];
+                        entities.Add(entity);
+                    }
+                }
+            }
+
+            // Foreach entity attach its columns.
+            foreach (var entity in entities)
+            {
+                // Add the columns to the model.
+                using (var cmd = GetColumns(entity.Name, connection))
+                {
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var column = new SqlColumn((string)reader["COLUMN_NAME"], (System.Data.SqlDbType)Enum.Parse(typeof(System.Data.SqlDbType), (string)reader["DATA_TYPE"], true), (int)reader["ORDINAL_POSITION"]);
+                            //column.IsNullable = (bool)reader["IS_NULLABLE"];
+                            if (!Convert.IsDBNull(reader["COLUMN_DEFAULT"]))
+                                column.Default = (string)reader["COLUMN_DEFAULT"];
+                            if (!Convert.IsDBNull(reader["CHARACTER_MAXIMUM_LENGTH"]))
+                                column.MaximumLength = (int)reader["CHARACTER_MAXIMUM_LENGTH"];
+                            if (!Convert.IsDBNull(reader["NUMERIC_PRECISION"]))
+                                column.Precision = (byte)reader["NUMERIC_PRECISION"];
+                            if (!Convert.IsDBNull(reader["NUMERIC_SCALE"]))
+                                column.Scale = (int)reader["NUMERIC_SCALE"];
+
+                            column.IsNullable = (int)reader["AllowsNull"] == 1;
+                            column.IsComputed = (int)reader["IsComputed"] == 1;
+                            if (!Convert.IsDBNull(reader["IsDeterministic"]))
+                                column.IsDeterministic = (int)reader["IsDeterministic"] == 1;
+                            column.IsIdentity = (int)reader["IsIdentity"] == 1;
+
+                            entity.Columns.Add(column);
+                        }
+                    }
+                }
+
+                // Add the constraints to the model.
+                using (var cmd = GetConstraints(entity.Name, connection))
+                {
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var column_name = (string)reader["COLUMN_NAME"];
+
+                            // If the column doens't exist it means there was a failure importing it.
+                            if (!entity.ContainsColumn(column_name))
+                                throw new Exceptions.ModelFactoryException(string.Format("Invalid constraint: Column '{0}' wasn't imported.", column_name));
+
+                            var column = entity.Columns[column_name];
+
+                            var constraint_name = (string)reader["CONSTRAINT_NAME"];
+                            var constraint_type = ModelFactory.ParseConstraintType((string)reader["CONSTRAINT_TYPE"]);
+
+                            Constraint constraint;
+
+                            // Check if the constraint already exists.  If it does it means it has multiple columns.
+                            if (entity.ContainsConstraint(constraint_name))
+                                constraint = entity.Constraints[constraint_name];
+                            else
+                            {
+                                // The constraint doesn't exist yet.  Create a new constraint and add it to the model.
+                                // If it's a foreign key it means there will be a record in the referential constraints.
+                                constraint = constraint_type == ConstraintType.ForeignKey ? new ReferentialConstraint(constraint_name, constraint_type) : new Constraint(constraint_name, constraint_type);
+                                entity.Constraints.Add(constraint);
+                            }
+
+                            // Some constraints use multiple columns.
+                            constraint.Columns.Add(new ConstraintColumn((int)reader["ORDINAL_POSITION"], column));
+
+                            // Reference the constraint in the column.
+                            column.Constraints.Add(constraint);
+                        }
+                    }
+                }
+
+                foreach (ReferentialConstraint constraint in entity.Constraints.Where(c => c is ReferentialConstraint))
+                {
+                    // Update the referential constraints to include their relationship partner table.
+                    using (var cmd = GetReferential(constraint.Name, connection))
+                    {
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                constraint.SetParentConstraintName((string)reader["UNIQUE_CONSTRAINT_NAME"]);
+                                constraint.UpdateRule = (string)reader["UPDATE_RULE"];
+                                constraint.DeleteRule = (string)reader["DELETE_RULE"];
+                            }
+                        }
+                    }
+
+                    // Update the referential constraint to include the parent table name for the foreign relationship.
+                    using (var cmd = GetConstraint(constraint.ParentConstraintName, connection))
+                    {
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                constraint.ParentName = (string)reader["TABLE_NAME"];
+                            }
+                        }
+                    }
+                }
+            }
+
+            return entities;
+        }
+
+        /// <summary>
+        /// Extract the routines (stored procedures) from the database and add them to the model.
+        /// </summary>
+        protected override EntityCollection<Routine> GetRoutines()
+        {
+            return null;
         }
 
         /// <summary>

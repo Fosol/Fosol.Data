@@ -14,7 +14,7 @@ namespace Fosol.Data.Models.TestConsole
             var config = Configuration.ModelFactorySection.GetDefault();
             var config_model = config.DataModels["Fosol.Team.Db.Dev"];
             var factory = new SqlModelFactory(config_model);
-            var model = factory.Build();
+            var model = factory.Download();
         }
     }
 }

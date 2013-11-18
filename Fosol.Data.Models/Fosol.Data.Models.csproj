@@ -79,8 +79,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="Routine.cs" />
     <Compile Include="SqlClient\SqlColumn.cs" />
     <Compile Include="SqlClient\SqlModelFactory.cs" />
+    <Compile Include="Table.cs" />
+    <Compile Include="View.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fosol.Common\Fosol.Common\Fosol.Common.csproj">
