@@ -312,7 +312,7 @@ namespace Fosol.Data.Models.SqlClient
         /// </summary>
         protected override EntityCollection<Routine> GetRoutines()
         {
-            return null;
+            return new EntityCollection<Routine>(); ;
         }
 
         /// <summary>

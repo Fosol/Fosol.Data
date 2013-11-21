@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Fosol.Data.Models
 {
@@ -131,7 +132,7 @@ namespace Fosol.Data.Models
         /// Builds a data Model object that represents the database specified for this ModelFactory.
         /// </summary>
         /// <returns>A new instance of a Model.</returns>
-        public Model Download()
+        public virtual Model Download()
         {
             // A database has not been selected.
             if (string.IsNullOrEmpty(this.Connection.Database))
@@ -159,7 +160,7 @@ namespace Fosol.Data.Models
         /// Build the datamodel in code.  Generate the code classes based on the configuration.
         /// </summary>
         public void Build()
-        {
+        { 
             Build(this.Download());
         }
 
@@ -167,9 +168,23 @@ namespace Fosol.Data.Models
         /// Build the datamodel in code.  Generate the code classes based on the configuration.
         /// </summary>
         /// <param name="model">Model object to build.</param>
-        public void Build(Model model)
+        public virtual void Build(Model model)
         {
+            var xml = new XmlDocument();
+            xml.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\" ?><fosol.datamodel></fosol.datamodel>");
+            xml.Save("test.config");
+        }
 
+        public static void Test()
+        {
+            var config = new Configuration.Serialization.ModelFactorySection();
+            var model = new Configuration.Serialization.DataModelElement()
+            {
+                Name = "test"
+            };
+            config.DataModels.Add(model);
+
+            Fosol.Common.Serialization.XmlHelper.SerializeToFile(config, "fosol.datamodel.config", System.IO.FileMode.Create);
         }
 
         /// <summary>
