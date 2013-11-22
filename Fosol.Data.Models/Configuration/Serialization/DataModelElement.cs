@@ -91,6 +91,20 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Operators
+        public static explicit operator DataModelElement(Configuration.DataModelElement obj)
+        {
+            return new DataModelElement(obj.Name)
+            {
+                Alias = obj.Alias,
+                ConnectionString = obj.ConnectionString,
+                Namespace = obj.Namespace,
+                ProviderName = obj.ProviderName,
+                Rules = (RulesElement)obj.Rules,
+                Tables = (TableElementCollection)obj.Tables,
+                Views = (ViewElementCollection)obj.Views,
+                Routines = (RoutineElementCollection)obj.Routines
+            };
+        }
         #endregion
 
         #region Events

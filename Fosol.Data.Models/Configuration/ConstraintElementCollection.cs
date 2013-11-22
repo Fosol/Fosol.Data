@@ -26,6 +26,15 @@ namespace Fosol.Data.Models.Configuration
         #endregion
 
         #region Constructors
+        public ConstraintElementCollection()
+        {
+
+        }
+
+        public ConstraintElementCollection(ImportOption import)
+        {
+            this.Import = import;
+        }
         #endregion
 
         #region Methods
@@ -35,6 +44,15 @@ namespace Fosol.Data.Models.Configuration
         #endregion
 
         #region Operators
+        public static explicit operator ConstraintElementCollection(ConstraintCollection obj)
+        {
+            var constraints = new ConstraintElementCollection();
+            foreach (var constraint in obj)
+            {
+                constraints.Add((ConstraintElement)constraint);
+            }
+            return constraints;
+        }
         #endregion
     }
 }

@@ -28,7 +28,7 @@ namespace Fosol.Data.Models.Configuration
         }
 
         [ConfigurationProperty("camelCase", IsRequired = false, DefaultValue = false)]
-        public bool CamelCase
+        public bool UseCamelCase
         {
             get { return (bool)this["camelCase"]; }
             set { this["camelCase"] = value; }

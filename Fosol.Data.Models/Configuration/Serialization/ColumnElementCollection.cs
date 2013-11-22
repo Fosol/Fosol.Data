@@ -36,6 +36,15 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Operators
+        public static explicit operator ColumnElementCollection(Configuration.ColumnElementCollection obj)
+        {
+            var columns = new ColumnElementCollection();
+            foreach (var column in obj)
+            {
+                columns.Add((ColumnElement)column);
+            }
+            return columns;
+        }
         #endregion
 
         #region Events

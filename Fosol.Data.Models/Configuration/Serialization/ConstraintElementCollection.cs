@@ -29,10 +29,22 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Methods
-
+        public void Add(ConstraintElement item)
+        {
+            this.Items.Add(item);
+        }
         #endregion
 
         #region Operators
+        public static explicit operator ConstraintElementCollection(Configuration.ConstraintElementCollection obj)
+        {
+            var constraints = new ConstraintElementCollection();
+            foreach (var constraint in obj)
+            {
+                constraints.Add((ConstraintElement)constraint);
+            }
+            return constraints;
+        }
         #endregion
 
         #region Events

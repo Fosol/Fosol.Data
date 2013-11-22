@@ -33,10 +33,13 @@ namespace Fosol.Data.Models.Configuration.Serialization
             this.Action = ImportAction.Import;
         }
 
-        internal ConstraintElement(string name)
+        internal ConstraintElement(string name, string alias = null, string parentAlias = null, ImportAction action = ImportAction.Import)
             : this()
         {
             this.Name = name;
+            this.Alias = alias;
+            this.ParentAlias = parentAlias;
+            this.Action = action;
         }
         #endregion
 
@@ -45,6 +48,10 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Operators
+        public static explicit operator ConstraintElement(Configuration.ConstraintElement obj)
+        {
+            return new ConstraintElement(obj.Name, obj.Alias, obj.ParentAlias, obj.Action);
+        }
         #endregion
 
         #region Events

@@ -30,10 +30,12 @@ namespace Fosol.Data.Models.Configuration.Serialization
             this.Action = ImportAction.Import;
         }
 
-        internal ColumnElement(string name)
+        internal ColumnElement(string name, string alias = null, ImportAction action = ImportAction.Import)
             : this()
         {
             this.Name = name;
+            this.Alias = alias;
+            this.Action = action;
         }
         #endregion
 
@@ -42,6 +44,10 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Operators
+        public static explicit operator ColumnElement(Configuration.ColumnElement obj)
+        {
+            return new ColumnElement(obj.Name, obj.Alias, obj.Action);
+        }
         #endregion
 
         #region Events

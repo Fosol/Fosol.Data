@@ -23,11 +23,6 @@ namespace Fosol.Data.Models
         public string Name { get; private set; }
 
         /// <summary>
-        /// get/set - A unique name to identify this entity (used instead of the 'name' property).
-        /// </summary>
-        public string Alias { get; set; }
-
-        /// <summary>
         /// get - The type of entity this object represents from the database.
         /// </summary>
         public string EntityType { get; private set; }

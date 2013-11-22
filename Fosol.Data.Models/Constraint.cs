@@ -22,11 +22,6 @@ namespace Fosol.Data.Models
         public string Name { get; private set; }
 
         /// <summary>
-        /// get/set - A unique name to identify the constraint (used instead of the 'name' property).
-        /// </summary>
-        public string Alias { get; set; }
-
-        /// <summary>
         /// get - The constraint type.
         /// </summary>
         public ConstraintType ConstraintType { get; private set; }

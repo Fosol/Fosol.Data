@@ -147,6 +147,7 @@ namespace Fosol.Data.Models.Configuration
         /// </summary>
         public DataModelElement()
         {
+            this.Rules = new RulesElement();
             this.Tables = new TableElementCollection();
             this.Views = new ViewElementCollection();
             this.Routines = new RoutineElementCollection();
@@ -156,10 +157,14 @@ namespace Fosol.Data.Models.Configuration
         /// Creates a new instance of a DataModelElement object.
         /// </summary>
         /// <param name="name">Unique name to identify this datamodel.</param>
-        public DataModelElement(string name)
+        public DataModelElement(string name, string alias = null, string modelNamespace = null, string providerName = null, string connectionString = null)
             : this()
         {
             this.Name = name;
+            this.Alias = alias;
+            this.Namespace = modelNamespace;
+            this.ProviderName = providerName;
+            this.ConnectionString = connectionString;
         }
         #endregion
 
@@ -168,6 +173,15 @@ namespace Fosol.Data.Models.Configuration
         #endregion
 
         #region Operators
+        public static explicit operator DataModelElement(Model obj)
+        {
+            return new DataModelElement(obj.Name)
+            {
+                Tables = (TableElementCollection)obj.Tables,
+                Views = (ViewElementCollection)obj.Views,
+                Routines = (RoutineElementCollection)obj.Routines
+            };
+        }
         #endregion
 
         #region Events

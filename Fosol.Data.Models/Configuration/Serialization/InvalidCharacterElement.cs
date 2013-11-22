@@ -42,6 +42,10 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Operators
+        public static explicit operator InvalidCharacterElement(Configuration.InvalidCharacterElement obj)
+        {
+            return new InvalidCharacterElement(obj.Character, obj.Alias, obj.UseCamelCase);
+        }
         #endregion
 
         #region Events

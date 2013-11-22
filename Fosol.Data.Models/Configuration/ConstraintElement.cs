@@ -44,6 +44,18 @@ namespace Fosol.Data.Models.Configuration
         #endregion
 
         #region Constructors
+        public ConstraintElement()
+        {
+
+        }
+
+        public ConstraintElement(string name, string alias = null, string parentAlias = null, ImportAction action = ImportAction.Import)
+        {
+            this.Name = name;
+            this.Alias = alias;
+            this.ParentAlias = parentAlias;
+            this.Action = action;
+        }
         #endregion
 
         #region Methods
@@ -54,6 +66,10 @@ namespace Fosol.Data.Models.Configuration
         #endregion
 
         #region Operators
+        public static explicit operator ConstraintElement(Constraint obj)
+        {
+            return new ConstraintElement(obj.Name);
+        }
         #endregion
     }
 }

@@ -43,6 +43,15 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Operators
+        public static explicit operator InvalidCharacterElementCollection(Configuration.InvalidCharacterElementCollection obj)
+        {
+            var characters = new InvalidCharacterElementCollection();
+            foreach (var character in obj)
+            {
+                characters.Add((InvalidCharacterElement)character);
+            }
+            return characters;
+        }
         #endregion
 
         #region Events

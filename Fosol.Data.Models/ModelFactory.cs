@@ -132,7 +132,7 @@ namespace Fosol.Data.Models
         /// Builds a data Model object that represents the database specified for this ModelFactory.
         /// </summary>
         /// <returns>A new instance of a Model.</returns>
-        public virtual Model Download()
+        public virtual Model Build()
         {
             // A database has not been selected.
             if (string.IsNullOrEmpty(this.Connection.Database))
@@ -156,23 +156,31 @@ namespace Fosol.Data.Models
             return model;
         }
 
-        /// <summary>
-        /// Build the datamodel in code.  Generate the code classes based on the configuration.
-        /// </summary>
-        public void Build()
-        { 
-            Build(this.Download());
+        public Configuration.DataModelElement GenerateConfiguration(Model model)
+        {
+            var config = (Fosol.Data.Models.Configuration.DataModelElement)model;
+            return config;
         }
 
         /// <summary>
-        /// Build the datamodel in code.  Generate the code classes based on the configuration.
+        /// Generate the code for the datamodel.  Generate the code classes based on the configuration.
+        /// </summary>
+        public void GenerateCode()
+        {
+            GenerateCode(this.Build());
+        }
+
+        /// <summary>
+        /// Generate the code for the datamodel.  Generate the code classes based on the configuration.
         /// </summary>
         /// <param name="model">Model object to build.</param>
-        public virtual void Build(Model model)
+        public virtual void GenerateCode(Model model)
         {
             var xml = new XmlDocument();
             xml.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\" ?><fosol.datamodel></fosol.datamodel>");
             xml.Save("test.config");
+
+
         }
 
         public static void Test()

@@ -36,6 +36,15 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Operators
+        public static explicit operator ViewElementCollection(Configuration.ViewElementCollection obj)
+        {
+            var views = new ViewElementCollection();
+            foreach (var view in obj)
+            {
+                views.Add((ViewElement)view);
+            }
+            return views;
+        }
         #endregion
 
         #region Events

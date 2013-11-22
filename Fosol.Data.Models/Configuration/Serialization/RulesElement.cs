@@ -35,6 +35,14 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Operators
+        public static explicit operator RulesElement(Configuration.RulesElement obj)
+        {
+            return new RulesElement()
+            {
+                ForeignKeys = (ForeignKeyElement)obj.ForeignKeys,
+                InvalidCharacters = (InvalidCharacterElementCollection)obj.InvalidCharacters
+            };
+        }
         #endregion
 
         #region Events

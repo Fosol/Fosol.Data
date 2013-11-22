@@ -24,11 +24,6 @@ namespace Fosol.Data.Models
         public string Name { get; private set; }
 
         /// <summary>
-        /// get/set - A unique name to identiy this column (to be used instead of the 'name' property).
-        /// </summary>
-        public string Alias { get; set; }
-
-        /// <summary>
         /// get - The type of data the column contains.
         /// </summary>
         public string ColumnType { get; private set; }

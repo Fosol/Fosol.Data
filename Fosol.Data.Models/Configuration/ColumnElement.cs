@@ -36,6 +36,17 @@ namespace Fosol.Data.Models.Configuration
         #endregion
 
         #region Constructors
+        public ColumnElement()
+        {
+
+        }
+
+        public ColumnElement(string name, string alias = null, ImportAction action = ImportAction.Import)
+        {
+            this.Name = name;
+            this.Alias = alias;
+            this.Action = action;
+        }
         #endregion
 
         #region Methods
@@ -46,6 +57,10 @@ namespace Fosol.Data.Models.Configuration
         #endregion
 
         #region Operators
+        public static explicit operator ColumnElement(Column obj)
+        {
+            return new ColumnElement(obj.Name);
+        }
         #endregion
     }
 }

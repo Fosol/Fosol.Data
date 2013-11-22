@@ -33,6 +33,15 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Operators
+        public static explicit operator DataModelElementCollection(Configuration.DataModelElementCollection obj)
+        {
+            var models = new DataModelElementCollection();
+            foreach (var model in obj)
+            {
+                models.Add((DataModelElement)model);
+            }
+            return models;
+        }
         #endregion
 
         #region Events

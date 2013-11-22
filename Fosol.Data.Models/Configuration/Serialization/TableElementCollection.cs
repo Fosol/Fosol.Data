@@ -36,6 +36,15 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Operators
+        public static explicit operator TableElementCollection(Configuration.TableElementCollection obj)
+        {
+            var tables = new TableElementCollection();
+            foreach (var table in obj)
+            {
+                tables.Add((TableElement)table);
+            }
+            return tables;
+        }
         #endregion
 
         #region Events

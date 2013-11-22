@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Fosol.Data.Models.Configuration
 {
-    public class RoutineElement
+    public sealed class RoutineElement
         : ConfigurationElement
     {
         #region Variables
@@ -38,16 +38,29 @@ namespace Fosol.Data.Models.Configuration
         public ColumnElementCollection Columns
         {
             get { return (ColumnElementCollection)this["columns"]; }
+            set { this["columns"] = value; }
         }
 
         [ConfigurationProperty("constraints", IsRequired = false)]
         public ConstraintElementCollection Constraints
         {
             get { return (ConstraintElementCollection)this["constraints"]; }
+            set { this["constraints"] = value; }
         }
         #endregion
 
         #region Constructors
+        public RoutineElement()
+        {
+
+        }
+
+        public RoutineElement(string name, string alias = null, ImportAction action = ImportAction.Import)
+        {
+            this.Name = name;
+            this.Alias = alias;
+            this.Action = action;
+        }
         #endregion
 
         #region Methods
@@ -58,6 +71,14 @@ namespace Fosol.Data.Models.Configuration
         #endregion
 
         #region Operators
+        public static explicit operator RoutineElement(Routine obj)
+        {
+            return new RoutineElement(obj.Name)
+            {
+                Columns = (ColumnElementCollection)obj.Columns,
+                Constraints = (ConstraintElementCollection)obj.Constraints
+            };
+        }
         #endregion
     }
 }

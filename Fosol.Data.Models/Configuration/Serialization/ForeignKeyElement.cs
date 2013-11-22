@@ -27,6 +27,12 @@ namespace Fosol.Data.Models.Configuration.Serialization
             this.Pluralize = true;
             this.UseColumnName = true;
         }
+
+        internal ForeignKeyElement(bool pluralize, bool useColumnName)
+        {
+            this.Pluralize = pluralize;
+            this.UseColumnName = UseColumnName;
+        }
         #endregion
 
         #region Methods
@@ -34,6 +40,10 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Operators
+        public static explicit operator ForeignKeyElement(Configuration.ForeignKeyElement obj)
+        {
+            return new ForeignKeyElement(obj.Pluralize, obj.UseColumnName);
+        }
         #endregion
 
         #region Events

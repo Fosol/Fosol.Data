@@ -36,6 +36,15 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Operators
+        public static explicit operator RoutineElementCollection(Configuration.RoutineElementCollection obj)
+        {
+            var routines = new RoutineElementCollection();
+            foreach (var routine in obj)
+            {
+                routines.Add((RoutineElement)routine);
+            }
+            return routines;
+        }
         #endregion
 
         #region Events

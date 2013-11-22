@@ -24,11 +24,6 @@ namespace Fosol.Data.Models
         public string Name { get; private set; }
 
         /// <summary>
-        /// get/set - A unique name to identify the model (used instead of the 'name' property).
-        /// </summary>
-        public string Alias { get; set; }
-
-        /// <summary>
         /// get - A collection of tables within this model.
         /// </summary>
         public EntityCollection<Table> Tables { get; private set; }

@@ -32,6 +32,13 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Operators
+        public static explicit operator ModelFactorySection(Configuration.ModelFactorySection obj)
+        {
+            return new ModelFactorySection()
+            {
+                DataModels = (DataModelElementCollection)obj.DataModels
+            };
+        }
         #endregion
 
         #region Events
