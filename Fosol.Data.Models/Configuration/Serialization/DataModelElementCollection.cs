@@ -7,29 +7,26 @@ using System.Xml.Serialization;
 
 namespace Fosol.Data.Models.Configuration.Serialization
 {
-    [XmlRoot(ElementName = "routines")]
-    public sealed class RoutineElementCollection
+    [XmlRoot(ElementName = "datamodels")]
+    public sealed class DataModelElementCollection
     {
         #region Variables
         #endregion
 
         #region Properties
-        [XmlAttribute(AttributeName = "import")]
-        public ImportOption Import { get; set; }
-
-        [XmlElement(ElementName = "add", Type = typeof(RoutineElement))]
-        public List<RoutineElement> Items { get; set; }
+        [XmlElement(ElementName = "add", Type = typeof(DataModelElement))]
+        public List<DataModelElement> Items { get; set; }
         #endregion
 
         #region Constructors
-        internal RoutineElementCollection()
+        internal DataModelElementCollection()
         {
-            this.Items = new List<RoutineElement>();
+            this.Items = new List<DataModelElement>();
         }
         #endregion
 
         #region Methods
-        public void Add(RoutineElement item)
+        public void Add(DataModelElement item)
         {
             this.Items.Add(item);
         }

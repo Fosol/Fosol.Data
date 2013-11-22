@@ -20,7 +20,7 @@ namespace Fosol.Data.Models.Configuration.Serialization
         [XmlAttribute(AttributeName = "alias")]
         public string Alias { get; set; }
 
-        [XmlAttribute(AttributeName = "useCamelCase")]
+        [XmlAttribute(AttributeName = "camelCase")]
         public bool UseCamelCase { get; set; }
         #endregion
 

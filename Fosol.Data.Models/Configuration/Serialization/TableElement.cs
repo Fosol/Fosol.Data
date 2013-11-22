@@ -23,16 +23,25 @@ namespace Fosol.Data.Models.Configuration.Serialization
         [XmlAttribute(AttributeName = "action")]
         public ImportAction Action { get; set; }
 
+        [XmlElement(ElementName = "columns")]
         public ColumnElementCollection Columns { get; set; }
 
+        [XmlElement(ElementName = "constraints")]
         public ConstraintElementCollection Constraints { get; set; }
         #endregion
 
         #region Constructors
         internal TableElement()
         {
+            this.Action = ImportAction.Import;
             this.Columns = new ColumnElementCollection();
             this.Constraints = new ConstraintElementCollection();
+        }
+
+        internal TableElement(string name)
+            : this()
+        {
+            this.Name = name;
         }
         #endregion
 

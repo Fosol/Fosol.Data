@@ -57,6 +57,7 @@
     <Compile Include="Configuration\RoutineElementCollection.cs" />
     <Compile Include="Configuration\RulesElement.cs" />
     <Compile Include="Configuration\Serialization\ColumnElement.cs" />
+    <Compile Include="Configuration\Serialization\DataModelElementCollection.cs" />
     <Compile Include="Configuration\Serialization\ColumnElementCollection.cs" />
     <Compile Include="Configuration\Serialization\ConstraintElement.cs" />
     <Compile Include="Configuration\Serialization\ConstraintElementCollection.cs" />

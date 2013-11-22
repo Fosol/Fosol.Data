@@ -29,7 +29,10 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Methods
-
+        public void Add(ViewElement item)
+        {
+            this.Items.Add(item);
+        }
         #endregion
 
         #region Operators

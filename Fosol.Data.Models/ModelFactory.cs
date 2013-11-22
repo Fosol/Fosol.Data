@@ -178,11 +178,11 @@ namespace Fosol.Data.Models
         public static void Test()
         {
             var config = new Configuration.Serialization.ModelFactorySection();
-            var model = new Configuration.Serialization.DataModelElement()
-            {
-                Name = "test"
-            };
+            var model = new Configuration.Serialization.DataModelElement("test");
             config.DataModels.Add(model);
+            var table = new Configuration.Serialization.TableElement("test");
+            model.Tables.Items.Add(table);
+            table.Columns.Add(new Configuration.Serialization.ColumnElement("test"));
 
             Fosol.Common.Serialization.XmlHelper.SerializeToFile(config, "fosol.datamodel.config", System.IO.FileMode.Create);
         }

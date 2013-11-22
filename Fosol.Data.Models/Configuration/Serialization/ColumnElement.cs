@@ -14,11 +14,26 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Properties
+        [XmlAttribute(AttributeName = "name")]
+        public string Name { get; set; }
+
+        [XmlAttribute(AttributeName = "alias")]
+        public string Alias { get; set; }
+
+        [XmlAttribute(AttributeName = "action")]
+        public ImportAction Action { get; set; }
         #endregion
 
         #region Constructors
         internal ColumnElement()
         {
+            this.Action = ImportAction.Import;
+        }
+
+        internal ColumnElement(string name)
+            : this()
+        {
+            this.Name = name;
         }
         #endregion
 

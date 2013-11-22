@@ -16,14 +16,14 @@ namespace Fosol.Data.Models.Configuration.Serialization
 
         #region Properties
 
-        [XmlElement(ElementName = "add", Type = typeof(DataModelElement))]
-        public List<DataModelElement> DataModels { get; set; }
+        [XmlElement(ElementName = "datamodels")]
+        public DataModelElementCollection DataModels { get; set; }
         #endregion
 
         #region Constructors
         internal ModelFactorySection()
         {
-            this.DataModels = new List<DataModelElement>();
+            this.DataModels = new DataModelElementCollection();
         }
         #endregion
 

@@ -78,6 +78,12 @@ namespace Fosol.Data.Models.Configuration.Serialization
             this.Views = new ViewElementCollection();
             this.Routines = new RoutineElementCollection();
         }
+
+        internal DataModelElement(string name)
+            : this()
+        {
+            this.Name = name;
+        }
         #endregion
 
         #region Methods
