@@ -70,9 +70,9 @@ namespace Fosol.Data.Models.Configuration
         /// get/set - Datamodel rules to follow when building.
         /// </summary>
         [ConfigurationProperty("rules", IsRequired = false)]
-        public RulesElement Rules
+        public ControlElement Rules
         {
-            get { return (RulesElement)this["rules"]; }
+            get { return (ControlElement)this["rules"]; }
             set { this["rules"] = value; }
         }
 
@@ -147,7 +147,7 @@ namespace Fosol.Data.Models.Configuration
         /// </summary>
         public DataModelElement()
         {
-            this.Rules = new RulesElement();
+            this.Rules = new ControlElement();
             this.Tables = new TableElementCollection();
             this.Views = new ViewElementCollection();
             this.Routines = new RoutineElementCollection();

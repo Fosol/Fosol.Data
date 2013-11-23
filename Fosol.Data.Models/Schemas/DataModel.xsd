@@ -23,7 +23,7 @@
 
   <xs:complexType name="DataModelElement">
     <xs:sequence>
-      <xs:element name="rules" type="RulesElement" minOccurs="0"/>
+      <xs:element name="control" type="ControlElement" minOccurs="0"/>
       <xs:element name="tables" type="TableElementCollection" minOccurs="0"/>
       <xs:element name="views" type="ViewElementCollection" minOccurs="0"/>
       <xs:element name="routines" type="RoutineElementCollection" minOccurs="0"/>
@@ -35,18 +35,18 @@
     <xs:attribute name="connectionString" type="xs:string" use="optional"/>
   </xs:complexType>
 
-  <xs:complexType name="RulesElement">
+  <xs:complexType name="ControlElement">
     <xs:sequence>
-      <xs:element name="invalidCharacters" type="InvalidCharacterElementCollection" minOccurs="0"/>
+      <xs:element name="aliases" type="AliasElementCollection" minOccurs="0"/>
       <xs:element name="foreignKeys" type="ForeignKeyElement" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="InvalidCharacterElementCollection">
+  <xs:complexType name="AliasElementCollection">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
-      <xs:element name="add" type="InvalidCharacterElement"/>
+      <xs:element name="add" type="AliasElement"/>
     </xs:sequence>
-    <xs:attribute name="defaultAlias" type="xs:string" default="_"/>
+    <xs:attribute name="default" type="xs:string" default="_"/>
   </xs:complexType>
 
   <xs:complexType name="ForeignKeyElement">
@@ -54,9 +54,9 @@
     <xs:attribute name="useColumnName" type="xs:boolean" default="true"/>
   </xs:complexType>
 
-  <xs:complexType name="InvalidCharacterElement">
-    <xs:attribute name="char" type="xs:string" use="required"/>
-    <xs:attribute name="alias" type="xs:string" use="required"/>
+  <xs:complexType name="AliasElement">
+    <xs:attribute name="find" type="xs:string" use="required"/>
+    <xs:attribute name="replace" type="xs:string" use="required"/>
     <xs:attribute name="camelCase" type="xs:boolean" default="false"/>
   </xs:complexType>
 

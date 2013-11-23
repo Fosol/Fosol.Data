@@ -7,21 +7,21 @@ using System.Text;
 
 namespace Fosol.Data.Models.Configuration
 {
-    [ConfigurationCollection(typeof(InvalidCharacterElement),
+    [ConfigurationCollection(typeof(AliasElement),
         CollectionType = ConfigurationElementCollectionType.AddRemoveClearMap,
         AddItemName = "add")]
-    public class InvalidCharacterElementCollection
-        : ConfigurationElementCollection<InvalidCharacterElement>
+    public class AliasElementCollection
+        : ConfigurationElementCollection<AliasElement>
     {
         #region Variables
         #endregion
 
         #region Properties
-        [ConfigurationProperty("defaultAlias", IsRequired = false, DefaultValue = "_")]
-        public string DefaultAlias
+        [ConfigurationProperty("default", IsRequired = false, DefaultValue = "_")]
+        public string Default
         {
-            get { return (string)this.Attribute("defaultAlias"); }
-            set { this.Attribute("defaultAlias", value); }
+            get { return (string)this.Attribute("default"); }
+            set { this.Attribute("default", value); }
         }
         #endregion
 

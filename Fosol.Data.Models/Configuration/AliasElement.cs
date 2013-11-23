@@ -6,25 +6,25 @@ using System.Text;
 
 namespace Fosol.Data.Models.Configuration
 {
-    public class InvalidCharacterElement
+    public class AliasElement
         : ConfigurationElement
     {
         #region Variables
         #endregion
 
         #region Properties
-        [ConfigurationProperty("char", IsRequired = true, IsKey = true)]
-        public string Character
+        [ConfigurationProperty("find", IsRequired = true, IsKey = true)]
+        public string Find
         {
-            get { return (string)this["char"]; }
-            set { this["char"] = value; }
+            get { return (string)this["find"]; }
+            set { this["find"] = value; }
         }
 
-        [ConfigurationProperty("alias", IsRequired = true)]
-        public string Alias
+        [ConfigurationProperty("replace", IsRequired = true)]
+        public string Replace
         {
-            get { return (string)this["alias"]; }
-            set { this["alias"] = value; }
+            get { return (string)this["replace"]; }
+            set { this["replace"] = value; }
         }
 
         [ConfigurationProperty("camelCase", IsRequired = false, DefaultValue = false)]

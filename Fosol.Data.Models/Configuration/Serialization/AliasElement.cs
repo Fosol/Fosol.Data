@@ -8,31 +8,31 @@ using System.Xml.Serialization;
 namespace Fosol.Data.Models.Configuration.Serialization
 {
     [XmlRoot(ElementName = "invalidCharacter")]
-    public sealed class InvalidCharacterElement
+    public sealed class AliasElement
     {
         #region Variables
         #endregion
 
         #region Properties
-        [XmlAttribute(AttributeName = "char")]
-        public string Char { get; set; }
+        [XmlAttribute(AttributeName = "find")]
+        public string Find { get; set; }
 
-        [XmlAttribute(AttributeName = "alias")]
-        public string Alias { get; set; }
+        [XmlAttribute(AttributeName = "replace")]
+        public string Replace { get; set; }
 
         [XmlAttribute(AttributeName = "camelCase")]
         public bool UseCamelCase { get; set; }
         #endregion
 
         #region Constructors
-        internal InvalidCharacterElement()
+        internal AliasElement()
         {
         }
 
-        internal InvalidCharacterElement(string invalidChar, string alias = "", bool useCamelCase = true)
+        internal AliasElement(string find, string replace = "", bool useCamelCase = true)
         {
-            this.Char = invalidChar;
-            this.Alias = alias;
+            this.Find = find;
+            this.Replace = replace;
             this.UseCamelCase = useCamelCase;
         }
         #endregion
@@ -42,9 +42,9 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Operators
-        public static explicit operator InvalidCharacterElement(Configuration.InvalidCharacterElement obj)
+        public static explicit operator AliasElement(Configuration.AliasElement obj)
         {
-            return new InvalidCharacterElement(obj.Character, obj.Alias, obj.UseCamelCase);
+            return new AliasElement(obj.Find, obj.Replace, obj.UseCamelCase);
         }
         #endregion
 

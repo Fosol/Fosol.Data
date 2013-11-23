@@ -7,25 +7,25 @@ using System.Xml.Serialization;
 
 namespace Fosol.Data.Models.Configuration.Serialization
 {
-    [XmlRoot(ElementName = "rules")]
-    public sealed class RulesElement
+    [XmlRoot(ElementName = "control")]
+    public sealed class ControlElement
     {
         #region Variables
         #endregion
 
         #region Properties
-        [XmlElement(ElementName = "invalidCharacters")]
-        public InvalidCharacterElementCollection InvalidCharacters { get; set; }
+        [XmlElement(ElementName = "aliases")]
+        public AliasElementCollection Aliases { get; set; }
 
         [XmlElement(ElementName = "foreignKeys", Type = typeof(ForeignKeyElement))]
         public ForeignKeyElement ForeignKeys { get; set; }
         #endregion
 
         #region Constructors
-        internal RulesElement()
+        internal ControlElement()
         {
-            this.InvalidCharacters = new InvalidCharacterElementCollection();
-            this.InvalidCharacters.Add(new InvalidCharacterElement(" ", "", true));
+            this.Aliases = new AliasElementCollection();
+            this.Aliases.Add(new AliasElement(" ", "", true));
             this.ForeignKeys = new ForeignKeyElement();
         }
         #endregion
@@ -35,12 +35,12 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Operators
-        public static explicit operator RulesElement(Configuration.RulesElement obj)
+        public static explicit operator ControlElement(Configuration.ControlElement obj)
         {
-            return new RulesElement()
+            return new ControlElement()
             {
                 ForeignKeys = (ForeignKeyElement)obj.ForeignKeys,
-                InvalidCharacters = (InvalidCharacterElementCollection)obj.InvalidCharacters
+                Aliases = (AliasElementCollection)obj.Aliases
             };
         }
         #endregion

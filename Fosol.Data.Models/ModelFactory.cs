@@ -156,9 +156,15 @@ namespace Fosol.Data.Models
             return model;
         }
 
-        public Configuration.DataModelElement GenerateConfiguration(Model model)
+        public Configuration.DataModelElement GenerateConfiguration(Model model, Configuration.ControlElement rules = null)
         {
             var config = (Fosol.Data.Models.Configuration.DataModelElement)model;
+
+            if (rules != null)
+            {
+                config.Alias = rules.CreateAlias(config.Name);
+            }
+
             return config;
         }
 
