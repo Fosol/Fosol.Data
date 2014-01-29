@@ -23,19 +23,20 @@
 
   <xs:complexType name="DataModelElement">
     <xs:sequence>
-      <xs:element name="control" type="ControlElement" minOccurs="0"/>
+      <xs:element name="convention" type="ConventionElement" minOccurs="0"/>
       <xs:element name="tables" type="TableElementCollection" minOccurs="0"/>
       <xs:element name="views" type="ViewElementCollection" minOccurs="0"/>
       <xs:element name="routines" type="RoutineElementCollection" minOccurs="0"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required"/>
     <xs:attribute name="alias" type="xs:string" use="optional"/>
-    <xs:attribute name="namespace" type="xs:string" use="optional"/>
+    <xs:attribute name="namespace" type="xs:string" use="optional" default="Model"/>
+    <xs:attribute name="useFluentApi" type="xs:boolean" use="optional" default="false"/>
     <xs:attribute name="providerName" type="xs:string" use="optional"/>
     <xs:attribute name="connectionString" type="xs:string" use="optional"/>
   </xs:complexType>
 
-  <xs:complexType name="ControlElement">
+  <xs:complexType name="ConventionElement">
     <xs:sequence>
       <xs:element name="aliases" type="AliasElementCollection" minOccurs="0"/>
       <xs:element name="foreignKeys" type="ForeignKeyElement" minOccurs="0"/>

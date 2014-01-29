@@ -7,21 +7,30 @@ using System.Text.RegularExpressions;
 
 namespace Fosol.Data.Models.Configuration
 {
-    public sealed class ControlElement
+    /// <summary>
+    /// Provides a way to configure how properties and foreign keys will be mapped and named.
+    /// </summary>
+    public sealed class ConventionElement
         : ConfigurationElement
     {
         #region Variables
-        public const string[] InvalidCharacters = new[] { ".", " " };
+        public static readonly string[] InvalidCharacters = new[] { ".", " " };
         #endregion
 
         #region Properties
+        /// <summary>
+        /// get/set - A collection of AliasElemnt which are used to find and replace invalid characters.
+        /// </summary>
         [ConfigurationProperty("aliases", IsRequired = false)]
         public AliasElementCollection Aliases
         {
-            get { return (AliasElementCollection)this["invalidCharacters"]; }
-            set { this["invalidCharacters"] = value; }
+            get { return (AliasElementCollection)this["aliases"]; }
+            set { this["aliases"] = value; }
         }
 
+        /// <summary>
+        /// get/set - Controls how to rename foreign keys.
+        /// </summary>
         [ConfigurationProperty("foreignKeys", IsRequired = false)]
         public ForeignKeyElement ForeignKeys
         {
@@ -31,7 +40,10 @@ namespace Fosol.Data.Models.Configuration
         #endregion
 
         #region Constructors
-        public ControlElement()
+        /// <summary>
+        /// Creates a new instance of a ControlElement.
+        /// </summary>
+        public ConventionElement()
         {
             this.Aliases = new AliasElementCollection();
             this.ForeignKeys = new ForeignKeyElement();
@@ -49,7 +61,7 @@ namespace Fosol.Data.Models.Configuration
             // Aggregate a collection of invalid characters and their replacement values.
             var replace = (
                 from a in this.Aliases
-                join ic in ControlElement.InvalidCharacters
+                join ic in ConventionElement.InvalidCharacters
                     on a.Find equals ic
                 select new { Find = ic ?? a.Find, Replace = a.Replace ?? this.Aliases.Default, UserCamelCase = a.UseCamelCase }
                 ).Distinct();

@@ -7,8 +7,8 @@ using System.Xml.Serialization;
 
 namespace Fosol.Data.Models.Configuration.Serialization
 {
-    [XmlRoot(ElementName = "control")]
-    public sealed class ControlElement
+    [XmlRoot(ElementName = "convention")]
+    public sealed class ConventionElement
     {
         #region Variables
         #endregion
@@ -22,7 +22,7 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Constructors
-        internal ControlElement()
+        internal ConventionElement()
         {
             this.Aliases = new AliasElementCollection();
             this.Aliases.Add(new AliasElement(" ", "", true));
@@ -35,9 +35,9 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Operators
-        public static explicit operator ControlElement(Configuration.ControlElement obj)
+        public static explicit operator ConventionElement(Configuration.ConventionElement obj)
         {
-            return new ControlElement()
+            return new ConventionElement()
             {
                 ForeignKeys = (ForeignKeyElement)obj.ForeignKeys,
                 Aliases = (AliasElementCollection)obj.Aliases

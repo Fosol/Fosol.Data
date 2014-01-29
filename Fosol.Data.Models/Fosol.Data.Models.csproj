@@ -30,7 +30,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeFactory.cs" />
     <Compile Include="ColumnCollection.cs" />
     <Compile Include="Configuration\ColumnElement.cs" />
     <Compile Include="Configuration\ColumnElementCollection.cs" />
@@ -55,7 +63,7 @@
     <Compile Include="Configuration\ModelFactorySection.cs" />
     <Compile Include="Configuration\RoutineElement.cs" />
     <Compile Include="Configuration\RoutineElementCollection.cs" />
-    <Compile Include="Configuration\ControlElement.cs" />
+    <Compile Include="Configuration\ConventionElement.cs" />
     <Compile Include="Configuration\Serialization\ColumnElement.cs" />
     <Compile Include="Configuration\Serialization\DataModelElementCollection.cs" />
     <Compile Include="Configuration\Serialization\ColumnElementCollection.cs" />
@@ -67,7 +75,7 @@
     <Compile Include="Configuration\Serialization\AliasElement.cs" />
     <Compile Include="Configuration\Serialization\ModelFactorySection.cs" />
     <Compile Include="Configuration\Serialization\RoutineElement.cs" />
-    <Compile Include="Configuration\Serialization\ControlElement.cs" />
+    <Compile Include="Configuration\Serialization\ConventionElement.cs" />
     <Compile Include="Configuration\Serialization\RoutineElementCollection.cs" />
     <Compile Include="Configuration\Serialization\ViewElementCollection.cs" />
     <Compile Include="Configuration\Serialization\TableElementCollection.cs" />
@@ -83,6 +91,7 @@
     <Compile Include="ConstraintType.cs" />
     <Compile Include="Column.cs" />
     <Compile Include="ConstraintCollection.cs" />
+    <Compile Include="CSharp\CSharpCodeFactory.cs" />
     <Compile Include="EntityCollection.cs" />
     <Compile Include="EntityType.cs" />
     <Compile Include="Exceptions\ModelFactoryException.cs" />
@@ -109,7 +118,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="Configuration\DefaultDataModel.config" />
+    <None Include="packages.config" />
     <None Include="Schemas\DataModel.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -119,6 +130,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

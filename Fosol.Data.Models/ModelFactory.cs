@@ -10,12 +10,12 @@ using System.Xml;
 namespace Fosol.Data.Models
 {
     /// <summary>
-    /// A ModelFactory provides a way to automate the process of generating a Model from on a database.
+    /// A ModelFactory provides a way to automate the process of generating a Model from a database.
     /// ModelFactory is an abstract class for specific data provider model factories (i.e. SqlModelFactory).
     /// </summary>
     public abstract class ModelFactory
     {
-        #region Variables
+        #region Variabless
         #endregion
 
         #region Properties
@@ -129,10 +129,10 @@ namespace Fosol.Data.Models
 
         #region Methods
         /// <summary>
-        /// Builds a data Model object that represents the database specified for this ModelFactory.
+        /// Generate a data Model object that represents the database specified for this ModelFactory.
         /// </summary>
         /// <returns>A new instance of a Model.</returns>
-        public virtual Model Build()
+        public virtual Model Generate()
         {
             // A database has not been selected.
             if (string.IsNullOrEmpty(this.Connection.Database))
@@ -156,49 +156,47 @@ namespace Fosol.Data.Models
             return model;
         }
 
-        public Configuration.DataModelElement GenerateConfiguration(Model model, Configuration.ControlElement rules = null)
+        /// <summary>
+        /// Generate a default configuration for the specified 'model'.
+        /// By default the model will contain 
+        /// </summary>
+        /// <param name="model">Model </param>
+        /// <param name="convention"></param>
+        /// <returns></returns>
+        public Configuration.DataModelElement GenerateConfiguration(Model model, Configuration.ConventionElement convention = null)
         {
             var config = (Fosol.Data.Models.Configuration.DataModelElement)model;
 
-            if (rules != null)
+            if (convention != null)
             {
-                config.Alias = rules.CreateAlias(config.Name);
+                config.Convention = convention; // Not sure about this line as I added it after a long time away from this project.
+                config.Alias = convention.CreateAlias(config.Name);
             }
 
             return config;
         }
 
         /// <summary>
-        /// Generate the code for the datamodel.  Generate the code classes based on the configuration.
+        /// If this ModelFactory has a 'Configuration' value it will save the configuration file to the specified path.
+        /// If you provide a DataModelElement for the 'model' parameter it will use it to generate the configuration file.
+        /// If this ModelFactory has a 'Configuration' property value it will use it to generate the configuration file.
+        /// If all else fails the ModelFactory will attempt to generate a full model from the database and use it to generate the configuration file.
+        /// The default path is the assembly execution location.
         /// </summary>
-        public void GenerateCode()
+        /// <param name="path">Full path and file name.</param>
+        /// <param name="model">If you provide a DataModelElement object it will use it to create the configuration file.</param>
+        public void SaveConfiguration(string path = "fosol.datamodel.config", Configuration.DataModelElement model = null)
         {
-            GenerateCode(this.Build());
-        }
+            var section = new Configuration.Serialization.ModelFactorySection();
+            
+            if (model != null)
+                section.DataModels.Add((Configuration.Serialization.DataModelElement)model);
+            else if (this.Configuration != null)
+                section.DataModels.Add((Configuration.Serialization.DataModelElement)this.Configuration);
+            else
+                section.DataModels.Add((Configuration.Serialization.DataModelElement)this.GenerateConfiguration(this.Generate()));
 
-        /// <summary>
-        /// Generate the code for the datamodel.  Generate the code classes based on the configuration.
-        /// </summary>
-        /// <param name="model">Model object to build.</param>
-        public virtual void GenerateCode(Model model)
-        {
-            var xml = new XmlDocument();
-            xml.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\" ?><fosol.datamodel></fosol.datamodel>");
-            xml.Save("test.config");
-
-
-        }
-
-        public static void Test()
-        {
-            var config = new Configuration.Serialization.ModelFactorySection();
-            var model = new Configuration.Serialization.DataModelElement("test");
-            config.DataModels.Add(model);
-            var table = new Configuration.Serialization.TableElement("test");
-            model.Tables.Items.Add(table);
-            table.Columns.Add(new Configuration.Serialization.ColumnElement("test"));
-
-            Fosol.Common.Serialization.XmlHelper.SerializeToFile(config, "fosol.datamodel.config", System.IO.FileMode.Create);
+            Fosol.Common.Serialization.XmlHelper.SerializeToFile(section, path, System.IO.FileMode.Create);
         }
 
         /// <summary>

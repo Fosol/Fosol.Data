@@ -11,12 +11,13 @@ namespace Fosol.Data.Models.TestConsole
     {
         static void Main(string[] args)
         {
-            //var config = Configuration.ModelFactorySection.GetDefault();
-            //var config_model = config.DataModels["Fosol.Team.Db.Dev"];
-            //var factory = new SqlModelFactory(config_model);
-            //var model = factory.Download();
-            //factory.Build(model);
-            Fosol.Data.Models.ModelFactory.Test();
+            var config = Configuration.ModelFactorySection.GetDefault();
+            var config_model = config.DataModels["Fosol.Team.Db.Dev"];
+            var factory = new SqlModelFactory(config_model);
+            //var model = factory.Generate();
+            var code_factory = new CSharp.CSharpCodeFactory(factory);
+            code_factory.Generate();
+            //Fosol.Data.Models.ModelFactory.Test();
         }
     }
 }

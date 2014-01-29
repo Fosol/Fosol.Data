@@ -34,6 +34,12 @@ namespace Fosol.Data.Models.Configuration.Serialization
         public string Namespace { get; set; }
 
         /// <summary>
+        /// get/set - Controls whether the code for the model will use fluent API instead of Data Annotation.
+        /// </summary>
+        [XmlAttribute(AttributeName = "useFluentApi")]
+        public bool UseFluentApi { get; set; }
+
+        /// <summary>
         /// get/set - The data provider type name for the datasource.
         /// </summary>
         [XmlAttribute(AttributeName = "providerName")]
@@ -46,10 +52,10 @@ namespace Fosol.Data.Models.Configuration.Serialization
         public string ConnectionString { get; set; }
 
         /// <summary>
-        /// get/set - Datamodel rules to follow when building.
+        /// get/set - Datamodel convention to follow when building.
         /// </summary>
-        [XmlElement(ElementName = "rules")]
-        public ControlElement Rules { get; set; }
+        [XmlElement(ElementName = "convention")]
+        public ConventionElement Convention { get; set; }
 
         /// <summary>
         /// get/set - Collection of tables from the datasource.
@@ -73,7 +79,7 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #region Constructors
         internal DataModelElement()
         {
-            this.Rules = new ControlElement();
+            this.Convention = new ConventionElement();
             this.Tables = new TableElementCollection();
             this.Views = new ViewElementCollection();
             this.Routines = new RoutineElementCollection();
@@ -99,7 +105,7 @@ namespace Fosol.Data.Models.Configuration.Serialization
                 ConnectionString = obj.ConnectionString,
                 Namespace = obj.Namespace,
                 ProviderName = obj.ProviderName,
-                Rules = (ControlElement)obj.Rules,
+                Convention = (ConventionElement)obj.Convention,
                 Tables = (TableElementCollection)obj.Tables,
                 Views = (ViewElementCollection)obj.Views,
                 Routines = (RoutineElementCollection)obj.Routines

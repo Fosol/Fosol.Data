@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.Data.Common;
 using System.Linq;
@@ -39,11 +40,26 @@ namespace Fosol.Data.Models.Configuration
         /// <summary>
         /// get/set - The namespace to use when creating the datamodel.
         /// </summary>
-        [ConfigurationProperty("namespace", IsRequired = false)]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Namespace cannot be null or empty")]
+        [ConfigurationProperty("namespace", IsRequired = false, DefaultValue = "Model")]
         public string Namespace
         {
             get { return (string)this["namespace"]; }
-            set { this["namespace"] = value; }
+            set 
+            {
+                Fosol.Common.Validation.Assert.IsNotNullOrEmpty(value, "Namespace");
+                this["namespace"] = value; 
+            }
+        }
+
+        /// <summary>
+        /// get/set - Whether to use Fluent API when creating the code for the model.
+        /// </summary>
+        [ConfigurationProperty("useFluentApi", IsRequired = false, DefaultValue = false)]
+        public bool UseFluentApi
+        {
+            get { return (bool)this["useFluentApi"]; }
+            set { this["useFluentApi"] = value; }
         }
 
         /// <summary>
@@ -67,13 +83,13 @@ namespace Fosol.Data.Models.Configuration
         }
 
         /// <summary>
-        /// get/set - Datamodel rules to follow when building.
+        /// get/set - Datamodel convention to follow when building.
         /// </summary>
-        [ConfigurationProperty("rules", IsRequired = false)]
-        public ControlElement Rules
+        [ConfigurationProperty("convention", IsRequired = false)]
+        public ConventionElement Convention
         {
-            get { return (ControlElement)this["rules"]; }
-            set { this["rules"] = value; }
+            get { return (ConventionElement)this["convention"]; }
+            set { this["convention"] = value; }
         }
 
         /// <summary>
@@ -147,7 +163,7 @@ namespace Fosol.Data.Models.Configuration
         /// </summary>
         public DataModelElement()
         {
-            this.Rules = new ControlElement();
+            this.Convention = new ConventionElement();
             this.Tables = new TableElementCollection();
             this.Views = new ViewElementCollection();
             this.Routines = new RoutineElementCollection();

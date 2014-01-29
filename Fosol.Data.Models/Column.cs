@@ -24,9 +24,14 @@ namespace Fosol.Data.Models
         public string Name { get; private set; }
 
         /// <summary>
-        /// get - The type of data the column contains.
+        /// get - The original database type of the column.
         /// </summary>
-        public string ColumnType { get; private set; }
+        public string DbType { get; private set; }
+
+        /// <summary>
+        /// get - The native .NET type for this column.
+        /// </summary>
+        public Type NativeType { get; private set; }
 
         /// <summary>
         /// get - The ordinal position this column is in within the table.
@@ -44,7 +49,7 @@ namespace Fosol.Data.Models
         public int MaximumLength { get; set; }
 
         /// <summary>
-        /// get/set - The default value of this column.
+        /// get/set - The default value in the database of this column.
         /// </summary>
         public string Default { get; set; }
 
@@ -120,16 +125,17 @@ namespace Fosol.Data.Models
         /// <exception cref="System.ArgumentNullException">Parameters 'name' and 'columnType' cannot be null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Parameter 'ordinalPosition' must be equal to or greater than 0.</exception>
         /// <param name="name">A unique name to identify the column.</param>
-        /// <param name="columnType">The type of column.</param>
+        /// <param name="dbType">The original database type of the column.</param>
         /// <param name="ordinalPosition">The ordinal position of the column within the entity.</param>
-        public Column(string name, string columnType, int ordinalPosition)
+        public Column(string name, string dbType, int ordinalPosition)
         {
             Assert.IsNotNullOrEmpty(name, "name");
-            Assert.IsNotNullOrEmpty(columnType, "columnType");
+            Assert.IsNotNullOrEmpty(dbType, "dbType");
             Assert.MinRange(ordinalPosition, 0, "ordinalPosition");
 
             this.Name = name;
-            this.ColumnType = columnType;
+            this.DbType = dbType;
+            this.NativeType = GetNativeType(dbType);
             this.OrdinalPosition = ordinalPosition;
             this.Constraints = new ConstraintCollection();
         }
@@ -142,7 +148,44 @@ namespace Fosol.Data.Models
         /// <returns>Hash code value.</returns>
         public override int GetHashCode()
         {
-            return Fosol.Common.HashCode.Create(this.Name).Merge(this.OrdinalPosition).Merge(this.ColumnType);
+            return Fosol.Common.HashCode.Create(this.Name).Merge(this.OrdinalPosition).Merge(this.DbType);
+        }
+
+        /// <summary>
+        /// Set the 'NativeType' property value based on the 'columnType' value.
+        /// Override this method in your class to ensure valid type conversion occurs.
+        /// </summary>
+        /// <param name="columnType">The original database column type name.</param>
+        protected abstract Type GetNativeType(string columnDbType);
+
+        /// <summary>
+        /// Converts the 'Default' property value into the 'NativeType'.
+        /// You should override this method in your database specific type Column so that you can handle other default values.
+        /// </summary>
+        /// <returns>Default value in the 'NativeType'.</returns>
+        public virtual object GetDefaultValue()
+        {
+            if (!string.IsNullOrEmpty(this.Default))
+            {
+                if (this.NativeType == typeof(String))
+                    return this.Default;
+                else
+                {
+                    try
+                    {
+                        // Attempt to convert the default value into the native .NET type.
+                        // Many default values in the database are not convertable because they are database method types.
+                        // If the default value is a database method it will simply fail and return null.
+                        return Convert.ChangeType(this.Default, this.NativeType);
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                }
+            }
+
+            return null;
         }
         #endregion
 

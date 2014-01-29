@@ -39,7 +39,15 @@ namespace Fosol.Data.Models.SqlClient
         #endregion
 
         #region Methods
-
+        /// <summary>
+        /// Convert the original database column type into a native .NET type.
+        /// </summary>
+        /// <param name="columnDbType">Original database column type.</param>
+        /// <returns>A native .NET type.</returns>
+        protected override Type GetNativeType(string columnDbType)
+        {
+            return Fosol.Common.Converters.SqlDbTypeConverter.GetNativeType(columnDbType);
+        }
         #endregion
 
         #region Operators
