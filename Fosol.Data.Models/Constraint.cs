@@ -11,6 +11,7 @@ namespace Fosol.Data.Models
     /// A Constraint provides a way to represent a database constraint for a table.
     /// </summary>
     public class Constraint
+        : ICloneable
     {
         #region Variables
         #endregion
@@ -20,6 +21,11 @@ namespace Fosol.Data.Models
         /// get - The unique name to identify the constraint.
         /// </summary>
         public string Name { get; private set; }
+
+        /// <summary>
+        /// get/set - An alias to use instead of the oringal name.
+        /// </summary>
+        public string Alias { get; set; }
 
         /// <summary>
         /// get - The constraint type.
@@ -62,6 +68,26 @@ namespace Fosol.Data.Models
         public override int GetHashCode()
         {
             return Fosol.Common.HashCode.Create(this.Name);
+        }
+
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
+
+        public Constraint Clone()
+        {
+            var constraint = new Constraint(this.Name, this.ConstraintType)
+            {
+                Alias = this.Alias
+            };
+
+            foreach (var column in this.Columns)
+            {
+                constraint.Columns.Add(column.Clone());
+            }
+
+            return constraint;
         }
         #endregion
 

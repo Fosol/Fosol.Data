@@ -11,7 +11,7 @@ namespace Fosol.Data.Models
     /// An ConstraintCollection contains a collection of Constraint objects that represent tables and views.
     /// </summary>
     public sealed class ConstraintCollection
-        : IEnumerable<Constraint>
+        : IEnumerable<Constraint>, ICloneable
     {
         #region Variables
         private Dictionary<string, Constraint> _Constraints = new Dictionary<string, Constraint>();
@@ -124,6 +124,23 @@ namespace Fosol.Data.Models
         public bool ContainsConstraint(string name)
         {
             return _Constraints.ContainsKey(name);
+        }
+
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
+
+        public ConstraintCollection Clone()
+        {
+            var collection = new ConstraintCollection();
+
+            foreach (var constraint in this)
+            {
+                collection.Add(constraint.Clone());
+            }
+
+            return collection;
         }
         #endregion
 

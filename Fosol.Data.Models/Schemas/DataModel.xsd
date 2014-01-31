@@ -45,7 +45,11 @@
 
   <xs:complexType name="AliasElementCollection">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
-      <xs:element name="add" type="AliasElement"/>
+      <xs:choice>
+        <xs:element name="add" type="AliasElement"/>
+        <xs:element name="clear"/>
+        <xs:element name="remove" type="AliasElement"/>
+      </xs:choice>
     </xs:sequence>
     <xs:attribute name="default" type="xs:string" default="_"/>
   </xs:complexType>
@@ -57,13 +61,18 @@
 
   <xs:complexType name="AliasElement">
     <xs:attribute name="find" type="xs:string" use="required"/>
-    <xs:attribute name="replace" type="xs:string" use="required"/>
+    <xs:attribute name="replaceWith" type="xs:string" use="required"/>
     <xs:attribute name="camelCase" type="xs:boolean" default="false"/>
+    <xs:attribute name="isRegex" type="xs:boolean" default="false"/>
   </xs:complexType>
 
   <xs:complexType name="TableElementCollection">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
-      <xs:element name="add" type="TableElement"/>
+      <xs:choice>
+        <xs:element name="add" type="TableElement"/>
+        <xs:element name="clear"/>
+        <xs:element name="remove" type="TableElement"/>
+      </xs:choice>
     </xs:sequence>
     <xs:attribute name="import" type="ImportOption" default="All"/>
   </xs:complexType>
@@ -94,7 +103,11 @@
 
   <xs:complexType name="ColumnElementCollection">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
-      <xs:element name="add" type="ColumnElement"/>
+      <xs:choice>
+        <xs:element name="add" type="ColumnElement"/>
+        <xs:element name="clear"/>
+        <xs:element name="remove" type="ColumnElement"/>
+      </xs:choice>
     </xs:sequence>
     <xs:attribute name="import" type="ImportOption" default="All"/>
   </xs:complexType>
@@ -107,7 +120,11 @@
 
   <xs:complexType name="ConstraintElementCollection">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
-      <xs:element name="add" type="ConstraintElement"/>
+      <xs:choice>
+        <xs:element name="add" type="ConstraintElement"/>
+        <xs:element name="clear"/>
+        <xs:element name="remove" type="ConstraintElement"/>
+      </xs:choice>
     </xs:sequence>
     <xs:attribute name="import" type="ImportOption" default="All"/>
   </xs:complexType>

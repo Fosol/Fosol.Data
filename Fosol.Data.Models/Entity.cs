@@ -12,6 +12,7 @@ namespace Fosol.Data.Models
     /// An Entity contains information to recreate a table or view, its columns and constraints.
     /// </summary>
     public abstract class Entity
+        : ICloneable
     {
         #region Variables
         #endregion
@@ -21,6 +22,11 @@ namespace Fosol.Data.Models
         /// get - A unique name to identify this entity.
         /// </summary>
         public string Name { get; private set; }
+
+        /// <summary>
+        /// get/set - An alias to use instead of the oringal name.
+        /// </summary>
+        public string Alias { get; set; }
 
         /// <summary>
         /// get - The type of entity this object represents from the database.
@@ -99,6 +105,21 @@ namespace Fosol.Data.Models
         {
             return Fosol.Common.HashCode.Create(this.Name);
         }
+
+        /// <summary>
+        /// Deep clone this object.
+        /// </summary>
+        /// <returns>A new copy of this object.</returns>
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
+
+        /// <summary>
+        /// Deep clone this object.
+        /// </summary>
+        /// <returns>A new copy of this object.</returns>
+        public abstract Entity Clone();
         #endregion
 
         #region Events

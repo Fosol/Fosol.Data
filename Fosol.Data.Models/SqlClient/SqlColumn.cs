@@ -48,6 +48,33 @@ namespace Fosol.Data.Models.SqlClient
         {
             return Fosol.Common.Converters.SqlDbTypeConverter.GetNativeType(columnDbType);
         }
+
+        /// <summary>
+        /// Deep clones the column.
+        /// </summary>
+        /// <returns>A new copy of this column.</returns>
+        public override Column Clone()
+        {
+            var column = new SqlColumn(this.Name, this.SqlDbType, this.OrdinalPosition)
+            {
+                Alias = this.Alias,
+                Default = this.Default,
+                IsComputed = this.IsComputed,
+                IsDeterministic = this.IsDeterministic,
+                IsIdentity = this.IsIdentity,
+                IsNullable = this.IsNullable,
+                MaximumLength = this.MaximumLength,
+                Precision = this.Precision,
+                Scale = this.Scale
+            };
+
+            foreach (var constraint in this.Constraints)
+            {
+                column.Constraints.Add(constraint.Clone());
+            }
+
+            return column;
+        }
         #endregion
 
         #region Operators

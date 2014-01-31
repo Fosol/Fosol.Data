@@ -14,7 +14,11 @@ namespace Fosol.Data.Models.Configuration
         : ConfigurationElement
     {
         #region Variables
-        public static readonly string[] InvalidCharacters = new[] { ".", " " };
+        private bool _IsInitialized = false;
+
+        // Default invalid characters that cannot be used in data model naming.
+        // By default these characters will be replaced by the AliasElementCollection.Default value.
+        public static readonly string[] InvalidCharacters = new[] { ".", " ", "!", "@", "#", "%", "^", "&", "*", "(", ")", "[", "]", "{", "}", "|", "\"", ",", "/", "?", "`", "~", ":", ";", "'", "<", ">", "-", "=", "+" };
         #endregion
 
         #region Properties
@@ -52,23 +56,64 @@ namespace Fosol.Data.Models.Configuration
 
         #region Methods
         /// <summary>
-        /// Creates an alias for the given value by replacing invalid characters with new values.
+        /// Creates an alias for the given value by replacing invalid characters.
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// <param name="name">The original name from the datasource.</param>
+        /// <returns>A valid alias to use instead of the original name value from the datasource.</returns>
         public string CreateAlias(string name)
         {
             // Aggregate a collection of invalid characters and their replacement values.
-            var replace = (
+            var aliases = (
                 from a in this.Aliases
-                join ic in ConventionElement.InvalidCharacters
-                    on a.Find equals ic
-                select new { Find = ic ?? a.Find, Replace = a.Replace ?? this.Aliases.Default, UserCamelCase = a.UseCamelCase }
-                ).Distinct();
+                select a).Distinct();
 
-            // Create a regex statement and escape the values you are attempting to find.
-            var regex = new Regex(String.Join("|", replace.Select(c => Regex.Escape(c.Find))));
-            return regex.Replace(name, this.Aliases.Default);
+            // Group aliases that have the same ReplaceWith values.
+            var group = (
+                from a in aliases
+                group a by a.ReplaceWith into g
+                select new { ReplaceWith = g.Key, Aliases = g.ToList() });
+
+            // Replace invalid characters that have the same ReplaceWith value.
+            foreach (var g in group)
+            {
+                string exp;
+                // Create a regex statement and escape the values you are attempting to find.
+                if (g.Aliases.FirstOrDefault(a => a.IsRegex) == null)
+                    exp = String.Join("|", g.Aliases.Where(a => !a.IsRegex).Select(c => Regex.Escape(c.Find)));
+                else
+                    exp = "(" + String.Join("|", g.Aliases.Where(a => !a.IsRegex).Select(c => Regex.Escape(c.Find))) + ")|(" + String.Join(")|(", g.Aliases.Where(a => a.IsRegex).Select(c => c.Find)) + ")";
+                var regex = new Regex(exp);
+                name = regex.Replace(name, g.ReplaceWith);
+            }
+
+            return name;
+        }
+
+        /// <summary>
+        /// Initialize a default configuration with aliases for invalid characters.
+        /// </summary>
+        protected override void Init()
+        {
+            // Only perform this the first time.
+            if (!_IsInitialized)
+            {
+                _IsInitialized = true;
+                var aliases = (
+                    from ic in ConventionElement.InvalidCharacters
+                    select new AliasElement()
+                    {
+                        Find = ic,
+                        ReplaceWith = this.Aliases.Default,
+                        UseCamelCase = false,
+                        IsRegex = false
+                    });
+
+                foreach (var alias in aliases)
+                {
+                    this.Aliases.Add(alias);
+                }
+            }
+            base.Init();
         }
         #endregion
 

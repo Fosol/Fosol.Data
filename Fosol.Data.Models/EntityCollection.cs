@@ -11,7 +11,7 @@ namespace Fosol.Data.Models
     /// An EntityCollection contains a collection of Entity objects that represent tables and views.
     /// </summary>
     public sealed class EntityCollection<T>
-        : IEnumerable<T>
+        : IEnumerable<T>, ICloneable
         where T : Entity
     {
         #region Variables
@@ -126,6 +126,31 @@ namespace Fosol.Data.Models
         {
             return _Entities.ContainsKey(name);
         }
+
+        /// <summary>
+        /// Deep clone the collection.
+        /// </summary>
+        /// <returns>A new copy of the collection.</returns>
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
+
+        /// <summary>
+        /// Deep clone the collection.
+        /// </summary>
+        /// <returns>A new copy of the collection.</returns>
+        public EntityCollection<T> Clone()
+        {
+            var collection = new EntityCollection<T>();
+
+            foreach (var entity in this)
+            {
+                collection.Add((T)entity.Clone());
+            }
+
+            return collection;
+        }
         #endregion
 
         #region Operators
@@ -133,6 +158,7 @@ namespace Fosol.Data.Models
 
         #region Events
         #endregion
+
 
     }
 }

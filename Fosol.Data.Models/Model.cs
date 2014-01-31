@@ -13,6 +13,7 @@ namespace Fosol.Data.Models
     /// You can automate the process of creating a Model by using the appropriate ModelFactory for your database.
     /// </summary>
     public class Model
+        : ICloneable
     {
         #region Variables
         #endregion
@@ -22,6 +23,11 @@ namespace Fosol.Data.Models
         /// get - A unique name to identify the model.
         /// </summary>
         public string Name { get; private set; }
+
+        /// <summary>
+        /// get/set - An alias to use instead of the oringal name.
+        /// </summary>
+        public string Alias { get; set; }
 
         /// <summary>
         /// get - A collection of tables within this model.
@@ -86,6 +92,30 @@ namespace Fosol.Data.Models
         public bool ContainsRoutine(string name)
         {
             return this.Routines.ContainsEntity(name);
+        }
+
+        /// <summary>
+        /// Deep clone this Model.
+        /// </summary>
+        /// <returns>A new copy of the Model.</returns>
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
+
+        /// <summary>
+        /// Deep clone this Model.
+        /// </summary>
+        /// <returns>A new copy of the Model.</returns>
+        public Model Clone()
+        {
+            return new Model(this.Name)
+            {
+                Alias = this.Alias,
+                Routines = this.Routines.Clone(),
+                Tables = this.Tables.Clone(),
+                Views = this.Views.Clone()
+            };
         }
         #endregion
 

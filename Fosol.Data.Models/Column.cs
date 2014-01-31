@@ -13,6 +13,7 @@ namespace Fosol.Data.Models
     /// You will need to create a data provider specific Column (i.e. SqlColumn).
     /// </summary>
     public abstract class Column
+        : ICloneable
     {
         #region Variables
         #endregion
@@ -22,6 +23,11 @@ namespace Fosol.Data.Models
         /// get - A unique name to identify this column.
         /// </summary>
         public string Name { get; private set; }
+
+        /// <summary>
+        /// get/set - An alias to use instead of the oringal name.
+        /// </summary>
+        public string Alias { get; set; }
 
         /// <summary>
         /// get - The original database type of the column.
@@ -187,6 +193,13 @@ namespace Fosol.Data.Models
 
             return null;
         }
+
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
+
+        public abstract Column Clone();
         #endregion
 
         #region Operators

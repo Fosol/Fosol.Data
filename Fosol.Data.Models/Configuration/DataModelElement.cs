@@ -163,10 +163,6 @@ namespace Fosol.Data.Models.Configuration
         /// </summary>
         public DataModelElement()
         {
-            this.Convention = new ConventionElement();
-            this.Tables = new TableElementCollection();
-            this.Views = new ViewElementCollection();
-            this.Routines = new RoutineElementCollection();
         }
 
         /// <summary>
@@ -185,7 +181,50 @@ namespace Fosol.Data.Models.Configuration
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Generates a new instance of a Model that is a copy of the original one specified.
+        /// Updates the model based on the configuration settings.
+        /// </summary>
+        /// <param name="model">Model object to clone and apply configuration settings to.</param>
+        /// <returns>A new instance of a Model with the configuration settings applied to it.</returns>
+        public Model ApplyConfiguration(Model model)
+        {
+            var clone = model.Clone();
 
+            clone.Alias = this.Convention.CreateAlias(model.Name);
+
+            foreach (var table in clone.Tables)
+            {
+                table.Alias = this.Convention.CreateAlias(table.Name);
+
+                foreach (var column in table.Columns)
+                {
+                    column.Alias = this.Convention.CreateAlias(column.Name);
+
+                    foreach (var constraint in column.Constraints)
+                    {
+                        constraint.Alias = this.Convention.CreateAlias(constraint.Name);
+                    }
+                }
+
+                foreach (var constraint in table.Constraints)
+                {
+                    constraint.Alias = this.Convention.CreateAlias(constraint.Name);
+                }
+            }
+
+            foreach (var view in clone.Views)
+            {
+                view.Alias = this.Convention.CreateAlias(view.Name);
+            }
+
+            foreach (var routine in clone.Routines)
+            {
+                routine.Alias = this.Convention.CreateAlias(routine.Name);
+            }
+
+            return clone;
+        }
         #endregion
 
         #region Operators

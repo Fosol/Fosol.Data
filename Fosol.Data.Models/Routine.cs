@@ -24,7 +24,27 @@ namespace Fosol.Data.Models
         #endregion
 
         #region Methods
+        public override Entity Clone()
+        {
+            var routine = new Routine(this.Name, this.EntityType)
+            {
+                Alias = this.Alias,
+                Catalog = this.Catalog,
+                Schema = this.Schema
+            };
 
+            foreach (var column in this.Columns)
+            {
+                routine.Columns.Add(column.Clone());
+            }
+
+            foreach (var constraint in this.Constraints)
+            {
+                routine.Constraints.Add(constraint.Clone());
+            }
+
+            return routine;
+        }
         #endregion
 
         #region Operators

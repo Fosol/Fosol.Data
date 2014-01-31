@@ -63,7 +63,6 @@ namespace Fosol.Data.Models.Configuration
         #endregion
 
         #region Methods
-
         #endregion
 
         #region Events

@@ -20,11 +20,11 @@ namespace Fosol.Data.Models.Configuration
             set { this["find"] = value; }
         }
 
-        [ConfigurationProperty("replace", IsRequired = true)]
-        public string Replace
+        [ConfigurationProperty("replaceWith", IsRequired = true)]
+        public string ReplaceWith
         {
-            get { return (string)this["replace"]; }
-            set { this["replace"] = value; }
+            get { return (string)this["replaceWith"]; }
+            set { this["replaceWith"] = value; }
         }
 
         [ConfigurationProperty("camelCase", IsRequired = false, DefaultValue = false)]
@@ -33,13 +33,40 @@ namespace Fosol.Data.Models.Configuration
             get { return (bool)this["camelCase"]; }
             set { this["camelCase"] = value; }
         }
+
+        [ConfigurationProperty("isRegex", IsRequired = false, DefaultValue = false)]
+        public bool IsRegex
+        {
+            get { return (bool)this["isRegex"]; }
+            set { this["isRegex"] = value; }
+        }
         #endregion
 
         #region Constructors
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Determines if the AliasElement objects are equal.  This is determined by comparing their key value 'Find'.
+        /// </summary>
+        /// <param name="compareTo">Object to comare to this AliasElement.</param>
+        /// <returns>True if they are equal or have the same key value 'Find'.</returns>
+        public override bool Equals(object compareTo)
+        {
+            if (compareTo.GetType() == typeof(AliasElement))
+                return this.Find.Equals(((AliasElement)compareTo).Find);
 
+            return base.Equals(compareTo);
+        }
+
+        /// <summary>
+        /// Provides a unique hashcode that represents this AliasElement.
+        /// </summary>
+        /// <returns>Hashcode for this AliasElement.</returns>
+        public override int GetHashCode()
+        {
+            return this.Find.GetHashCode();
+        }
         #endregion
 
         #region Events

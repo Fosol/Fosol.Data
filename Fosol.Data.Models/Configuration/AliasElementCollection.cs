@@ -29,7 +29,18 @@ namespace Fosol.Data.Models.Configuration
         #endregion
 
         #region Methods
-
+        /// <summary>
+        /// Add 'element' to this collection.
+        /// If it's a duplicate of a prior item in the collection, the latest one will replace the prior one.
+        /// </summary>
+        /// <param name="element"></param>
+        protected override void BaseAdd(ConfigurationElement element)
+        {
+            // Replace the prior AliasElement object with the new one.
+            if (this.Contains(element))
+                this.Remove(((AliasElement)element).Find);
+            base.BaseAdd(element);
+        }
         #endregion
 
         #region Events
