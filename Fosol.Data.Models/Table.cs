@@ -24,6 +24,10 @@ namespace Fosol.Data.Models
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Performs a deep clone of this object.
+        /// </summary>
+        /// <returns>A cloned copy of this object.</returns>
         public override Entity Clone()
         {
             var table = new Table(this.Name, this.EntityType)
@@ -33,15 +37,7 @@ namespace Fosol.Data.Models
                 Schema = this.Schema
             };
 
-            foreach (var column in this.Columns)
-            {
-                table.Columns.Add(column.Clone());
-            }
-
-            foreach (var constraint in this.Constraints)
-            {
-                table.Constraints.Add(constraint.Clone());
-            }
+            DeepClone(table);
 
             return table;
         }

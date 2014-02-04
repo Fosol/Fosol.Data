@@ -33,15 +33,7 @@ namespace Fosol.Data.Models
                 Schema = this.Schema
             };
 
-            foreach (var column in this.Columns)
-            {
-                view.Columns.Add(column.Clone());
-            }
-
-            foreach (var constraint in this.Constraints)
-            {
-                view.Constraints.Add(constraint.Clone());
-            }
+            DeepClone(view);
 
             return view;
         }

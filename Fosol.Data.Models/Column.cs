@@ -194,11 +194,19 @@ namespace Fosol.Data.Models
             return null;
         }
 
+        /// <summary>
+        /// Perform shallow clone of this object.
+        /// </summary>
+        /// <returns>A cloned copy of this object.</returns>
         object ICloneable.Clone()
         {
             return this.Clone();
         }
 
+        /// <summary>
+        /// Perform shallow clone of this object.
+        /// </summary>
+        /// <returns>A cloned copy of this object.</returns>
         public abstract Column Clone();
         #endregion
 

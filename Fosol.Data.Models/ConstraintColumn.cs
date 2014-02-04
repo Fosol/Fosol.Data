@@ -11,7 +11,6 @@ namespace Fosol.Data.Models
     /// A ConstraintColumn provides a way to represent a constraint for the specified column.
     /// </summary>
     public class ConstraintColumn
-        : ICloneable
     {
         #region Variables
         #endregion
@@ -63,16 +62,6 @@ namespace Fosol.Data.Models
         public override int GetHashCode()
         {
             return Fosol.Common.HashCode.Create(this.Name);
-        }
-
-        object ICloneable.Clone()
-        {
-            return this.Clone();
-        }
-
-        public ConstraintColumn Clone()
-        {
-            return new ConstraintColumn(this.Position, this.Column.Clone());
         }
         #endregion
 

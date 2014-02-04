@@ -27,13 +27,6 @@ namespace Fosol.Data.Models.Configuration
             set { this["replaceWith"] = value; }
         }
 
-        [ConfigurationProperty("camelCase", IsRequired = false, DefaultValue = false)]
-        public bool UseCamelCase
-        {
-            get { return (bool)this["camelCase"]; }
-            set { this["camelCase"] = value; }
-        }
-
         [ConfigurationProperty("isRegex", IsRequired = false, DefaultValue = false)]
         public bool IsRegex
         {

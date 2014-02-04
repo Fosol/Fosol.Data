@@ -12,7 +12,7 @@ namespace Fosol.Data.Models
     /// Essentially it provides a way to find the constraints associated to the column.
     /// </summary>
     public sealed class ConstraintColumnCollection
-        : IEnumerable<ConstraintColumn>, ICloneable
+        : IEnumerable<ConstraintColumn>
     {
         #region Variables
         private List<ConstraintColumn> _Columns = new List<ConstraintColumn>();
@@ -87,23 +87,6 @@ namespace Fosol.Data.Models
 
             if (column != null)
                 _Columns.Remove(column);
-        }
-
-        object ICloneable.Clone()
-        {
-            return this.Clone();
-        }
-
-        public ConstraintColumnCollection Clone()
-        {
-            var collection = new ConstraintColumnCollection();
-
-            foreach (var constraint in this)
-            {
-                collection.Add(constraint.Clone());
-            }
-
-            return collection;
         }
         #endregion
 

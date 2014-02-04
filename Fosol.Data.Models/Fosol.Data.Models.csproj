@@ -98,8 +98,6 @@
     <Compile Include="ModelFactory.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="Model.cs" />
-    <Compile Include="Plots\Plot.cs" />
-    <Compile Include="Plots\TablePlot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReferentialConstraint.cs" />
     <Compile Include="Resources\Strings.Designer.cs">

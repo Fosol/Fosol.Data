@@ -14,7 +14,7 @@ namespace Fosol.Data.Models.UnitTests
             var factory = new SqlModelFactory("TestSqlDb");
 
             Assert.IsNotNull(factory);
-            Assert.IsTrue(factory.Connection is SqlConnection);
+            Assert.IsTrue(factory.Configuration.Connection is SqlConnection);
         }
     }
 }

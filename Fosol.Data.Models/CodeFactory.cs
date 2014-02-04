@@ -25,11 +25,6 @@ namespace Fosol.Data.Models
             get { return _Factory; }
         }
 
-        protected string Namespace
-        {
-            get { return this.ModelFactory.Configuration.Namespace; }
-        }
-
         protected string TargetDirectory
         {
             get { return Environment.CurrentDirectory; }

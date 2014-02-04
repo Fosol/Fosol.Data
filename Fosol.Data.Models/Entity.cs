@@ -117,9 +117,40 @@ namespace Fosol.Data.Models
 
         /// <summary>
         /// Deep clone this object.
+        /// Call the DeepClone in the Clone override within your class.
         /// </summary>
         /// <returns>A new copy of this object.</returns>
         public abstract Entity Clone();
+
+        /// <summary>
+        /// Clone the entity columns and constraints.
+        /// Ensures contraints reference the newly cloned columns.
+        /// </summary>
+        /// <param name="entity">The cloned entity to be updated with cloned columns and constraints.</param>
+        protected void DeepClone(Entity clonedEntity)
+        {
+            foreach (var column in this.Columns)
+            {
+                // Perform a shallow clone.
+                clonedEntity.Columns.Add(column.Clone());
+            }
+
+            // When cloning constraints make sure they reference the newly cloned columns.
+            foreach (var constraint in this.Constraints)
+            {
+                var constraint_clone = new Constraint(constraint.Name, constraint.ConstraintType);
+                constraint_clone.Alias = constraint.Alias;
+
+                // Reference the columns from the table, do not create new columns.
+                foreach (var column in constraint.Columns)
+                {
+                    var column_clone = this.Columns[column.Name];
+                    constraint_clone.Columns.Add(new ConstraintColumn(column.Position, column_clone));
+                }
+
+                clonedEntity.Constraints.Add(constraint_clone);
+            }
+        }
         #endregion
 
         #region Events

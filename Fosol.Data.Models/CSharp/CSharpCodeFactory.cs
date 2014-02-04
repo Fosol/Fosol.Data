@@ -1,5 +1,4 @@
 ﻿using Fosol.Common.Extensions.Strings;
-using Fosol.Data.Models.Plots;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,41 +32,10 @@ namespace Fosol.Data.Models.CSharp
         {
             // Create the in-memory whole data Model from the database.
             var model = this.ModelFactory.Generate();
-            var map = new List<TablePlot>();
 
-            if (this.ModelFactory.Configuration != null)
+            foreach (var table in model.Tables)
             {
-                var convention = this.ModelFactory.Configuration.Convention;
-
-                // Even when importing 'All' it still requires to check the configuration for details.
-                if (this.ModelFactory.Configuration.Tables.Import == Configuration.ImportOption.All)
-                {
-                    foreach (var table in model.Tables)
-                    {
-                        var config = this.ModelFactory.Configuration.Tables.FirstOrDefault(t => t.Name.Equals(table.Name, StringComparison.InvariantCultureIgnoreCase));
-
-                        if (config == null
-                            || config.Action == Configuration.ImportAction.Import)
-                            map.Add(new TablePlot(convention, table, config));
-                    }
-                }
-                else
-                {
-                    foreach (var config in this.ModelFactory.Configuration.Tables.Where(t => t.Action == Configuration.ImportAction.Import))
-                    {
-                        var table = model.Tables.FirstOrDefault(t => t.Name.Equals(config.Name, StringComparison.InvariantCultureIgnoreCase));
-
-                        if (table != null)
-                            map.Add(new TablePlot(convention, table, config));
-                    }
-                }
-            }
-            else
-                map = model.Tables.Select(t => new TablePlot(null, t, null)).ToList();
-
-            foreach (var plot in map)
-            {
-                SaveToFile(plot.Entity.Name + ".cs", GenerateTable(plot));
+                SaveToFile(table.Alias + ".cs", GenerateTable(table));
             }
             
             SaveToFile("Context.cs", GenerateContext(model));
@@ -77,11 +45,9 @@ namespace Fosol.Data.Models.CSharp
         /// Generates the code to create a table object.
         /// </summary>
         /// <param name="plot">Plot object provides a way to control how the table generates code.</param>
-        /// <returns></returns>
-        private string GenerateTable(TablePlot plot)
+        /// <returns>The code that was generated for this table.</returns>
+        private string GenerateTable(Table table)
         {
-            var table = plot.Entity;
-            var table_name = plot.GetName();
             var code = new StringBuilder();
 
             code.AppendLine("using System;");
@@ -96,9 +62,9 @@ namespace Fosol.Data.Models.CSharp
 
             // Only apply Data Annotation if configured to do so.
             if (!this.ModelFactory.Configuration.UseFluentApi)
-                code.AppendLine(("[Table(\"" + table_name + "\")]").Indent(1));
+                code.AppendLine(("[Table(\"" + table.Alias + "\")]").Indent(1));
 
-            code.AppendLine(("public partial class " + table_name).Indent(1));
+            code.AppendLine(("public partial class " + table.Alias).Indent(1));
             code.AppendLine("{".Indent(1));
 
             code.AppendLine("#region Variables".Indent(2));
@@ -154,7 +120,7 @@ namespace Fosol.Data.Models.CSharp
         {
             var code = new StringBuilder();
             code.AppendLine("using System.Data.Entity;");
-            if (!string.IsNullOrEmpty(this.Namespace))
+            if (!string.IsNullOrEmpty(this.ModelFactory.Configuration.Namespace))
             {
                 code.AppendLine("namespace " + this.ModelFactory.Configuration.Namespace + "{");
             }
@@ -178,7 +144,7 @@ namespace Fosol.Data.Models.CSharp
 
             code.AppendLine("}");
 
-            if (!string.IsNullOrEmpty(this.Namespace))
+            if (!string.IsNullOrEmpty(this.ModelFactory.Configuration.Namespace))
                 code.AppendLine("}");
 
             return code.ToString();
@@ -191,10 +157,10 @@ namespace Fosol.Data.Models.CSharp
 
             if (!this.ModelFactory.Configuration.UseFluentApi)
             {
-                prop.AppendLine("[ForeignKey(\"" + column.Name + "\")]");
+                prop.AppendLine("[ForeignKey(\"" + column.Alias + "\")]");
             }
 
-            prop.AppendLine("public " + constraint.ParentName + " " + constraint.Name + " { get; set; }");
+            prop.AppendLine("public " + constraint.ParentAlias + " " + constraint.Alias + " { get; set; }");
 
             return prop.ToString();
         }

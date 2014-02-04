@@ -182,22 +182,75 @@ namespace Fosol.Data.Models.Configuration
 
         #region Methods
         /// <summary>
-        /// Generates a new instance of a Model that is a copy of the original one specified.
         /// Updates the model based on the configuration settings.
         /// </summary>
-        /// <param name="model">Model object to clone and apply configuration settings to.</param>
-        /// <returns>A new instance of a Model with the configuration settings applied to it.</returns>
-        public Model ApplyConfiguration(Model model)
+        /// <param name="model">Model object to apply configuration settings to.</param>
+        public void ApplyConfiguration(Model model)
         {
-            var clone = model.Clone();
+            model.Alias = this.Convention.CreateAlias(model.Name);
 
-            clone.Alias = this.Convention.CreateAlias(model.Name);
+            ApplyConfigurationToTables(model);
 
-            foreach (var table in clone.Tables)
+            ApplyConfigurationToViews(model);
+
+            ApplyConfigurationToRoutines(model);
+        }
+
+        private void ApplyConfigurationToTables(Model model)
+        {
+            var table_import_option = this.Tables.Import;
+            var remove_entities = new List<string>();
+
+            foreach (var table in model.Tables)
             {
+                var table_config = this.Tables.FirstOrDefault(t => t.Name.Equals(table.Name, StringComparison.InvariantCultureIgnoreCase));
+
+                // This table is not a part of the configuration, it should be removed from the model.
+                if (table_config == null && table_import_option == ImportOption.Configured)
+                {
+                    remove_entities.Add(table.Name);
+                    continue;
+                }
+
+                if (table_config == null)
+                    table_config = new TableElement(table.Name);
+
                 table.Alias = this.Convention.CreateAlias(table.Name);
 
-                foreach (var column in table.Columns)
+                ApplyConfigurationToColumns(table_config, table);
+
+                ApplyConfigurationToConstraints(table_config, table);
+            }
+
+            // Remove tables from model that are not part of the configuration.
+            foreach (var name in remove_entities)
+            {
+                model.Tables.Remove(name);
+            }
+        }
+
+        private void ApplyConfigurationToViews(Model model)
+        {
+            var view_import_option = this.Views.Import;
+            var remove_entities = new List<string>();
+
+            foreach (var view in model.Views)
+            {
+                var config = this.Views.FirstOrDefault(v => v.Name.Equals(view.Name, StringComparison.InvariantCultureIgnoreCase));
+
+                // This view is not a part of the configuration, it should be removed from the model.
+                if (config == null && view_import_option == ImportOption.Configured)
+                {
+                    remove_entities.Add(view.Name);
+                    continue;
+                }
+
+                if (config == null)
+                    config = new ViewElement(view.Name);
+
+                view.Alias = this.Convention.CreateAlias(view.Name);
+
+                foreach (var column in view.Columns)
                 {
                     column.Alias = this.Convention.CreateAlias(column.Name);
 
@@ -207,27 +260,153 @@ namespace Fosol.Data.Models.Configuration
                     }
                 }
 
-                foreach (var constraint in table.Constraints)
+                foreach (var constraint in view.Constraints)
                 {
                     constraint.Alias = this.Convention.CreateAlias(constraint.Name);
                 }
             }
 
-            foreach (var view in clone.Views)
+            // Remove views from model that are not part of the configuration.
+            foreach (var name in remove_entities)
             {
-                view.Alias = this.Convention.CreateAlias(view.Name);
+                model.Views.Remove(name);
             }
+        }
 
-            foreach (var routine in clone.Routines)
+        private void ApplyConfigurationToRoutines(Model model)
+        {
+            var routine_import_option = this.Routines.Import;
+            var remove_entities = new List<string>();
+
+            foreach (var routine in model.Routines)
             {
+                var config = this.Routines.FirstOrDefault(r => r.Name.Equals(routine.Name, StringComparison.InvariantCultureIgnoreCase));
+
+                // This view is not a part of the configuration, it should be removed from the model.
+                if (config == null && routine_import_option == ImportOption.Configured)
+                {
+                    remove_entities.Add(routine.Name);
+                    continue;
+                }
+
+                if (config == null)
+                    config = new RoutineElement(routine.Name);
+
                 routine.Alias = this.Convention.CreateAlias(routine.Name);
+
+                foreach (var column in routine.Columns)
+                {
+                    column.Alias = this.Convention.CreateAlias(column.Name);
+
+                    foreach (var constraint in column.Constraints)
+                    {
+                        constraint.Alias = this.Convention.CreateAlias(constraint.Name);
+                    }
+                }
+
+                foreach (var constraint in routine.Constraints)
+                {
+                    constraint.Alias = this.Convention.CreateAlias(constraint.Name);
+                }
             }
 
-            return clone;
+            // Remove routines from model that are not part of the configuration.
+            foreach (var name in remove_entities)
+            {
+                model.Routines.Remove(name);
+            }
+        }
+
+        private void ApplyConfigurationToColumns(TableElement config, Table table)
+        {
+            var remove_columns = new List<string>();
+
+            foreach (var column in table.Columns)
+            {
+                var column_config = config.Columns.FirstOrDefault(c => c.Name.Equals(column.Name, StringComparison.InvariantCultureIgnoreCase));
+
+                // This column is not a part of the configuration, it should be removed from the model.
+                if (column_config == null && config.Columns.Import == ImportOption.Configured)
+                {
+                    remove_columns.Add(column.Name);
+                    continue;
+                }
+
+                if (column_config == null)
+                    column_config =  new ColumnElement(column.Name);
+
+                column.Alias = this.Convention.CreateAlias(column.Name);
+
+                foreach (var constraint in column.Constraints)
+                {
+                    constraint.Alias = this.Convention.CreateAlias(constraint.Name);
+
+                    if (constraint.GetType() == typeof(ReferentialConstraint))
+                    {
+                        var ref_constraint = (ReferentialConstraint)constraint;
+                        ref_constraint.ParentAlias = this.Convention.CreateAlias(ref_constraint.ParentName);
+                    }
+                }
+            }
+
+            // Remove columns from table that are not part of the configuration.
+            foreach (var name in remove_columns)
+            {
+                table.Columns.Remove(name);
+            }
+        }
+
+        private void ApplyConfigurationToConstraints(TableElement config, Table table)
+        {
+            var remove_constraints = new List<string>();
+
+            foreach (var constraint in table.Constraints)
+            {
+                var constraint_config = config.Constraints.FirstOrDefault(c => c.Name.Equals(constraint.Name, StringComparison.InvariantCultureIgnoreCase));
+
+                // This constraint is not a part of the configuration, it should be removed from the model.
+                if (constraint_config == null && config.Constraints.Import == ImportOption.Configured)
+                {
+                    remove_constraints.Add(constraint.Name);
+                    continue;
+                }
+
+                if (constraint_config == null)
+                    constraint_config = new ConstraintElement(constraint.Name);
+
+                constraint.Alias = this.Convention.CreateAlias(constraint.Name);
+
+                if (constraint.GetType() == typeof(ReferentialConstraint))
+                {
+                    var ref_constraint = (ReferentialConstraint)constraint;
+                    ref_constraint.ParentAlias = this.Convention.CreateAlias(ref_constraint.ParentName);
+                }
+            }
+
+            // Remove constraints from table that are not part of the configuration.
+            foreach (var name in remove_constraints)
+            {
+                // Find any references to the constraint in the columns.
+                foreach (var column in table.Columns)
+                {
+                    var column_constraint = column.Constraints.FirstOrDefault(c => c.Name.Equals(name));
+
+                    if (column_constraint != null)
+                    {
+                        column.Constraints.Remove(column_constraint.Name);
+                    }
+                }
+                table.Constraints.Remove(name);
+            }
         }
         #endregion
 
         #region Operators
+        /// <summary>
+        /// Explicit conversion from a Model to a DataModelElement configuration object.
+        /// </summary>
+        /// <param name="obj">Model object to convert.</param>
+        /// <returns>A new instance of a DataModelElement configuration object.</returns>
         public static explicit operator DataModelElement(Model obj)
         {
             return new DataModelElement(obj.Name)

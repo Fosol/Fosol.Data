@@ -51,7 +51,8 @@
         <xs:element name="remove" type="AliasElement"/>
       </xs:choice>
     </xs:sequence>
-    <xs:attribute name="default" type="xs:string" default="_"/>
+    <xs:attribute name="defaultReplaceWith" type="xs:string" default="_"/>
+    <xs:attribute name="useCamelCase" type="xs:boolean" default="true"/>
   </xs:complexType>
 
   <xs:complexType name="ForeignKeyElement">
@@ -62,7 +63,6 @@
   <xs:complexType name="AliasElement">
     <xs:attribute name="find" type="xs:string" use="required"/>
     <xs:attribute name="replaceWith" type="xs:string" use="required"/>
-    <xs:attribute name="camelCase" type="xs:boolean" default="false"/>
     <xs:attribute name="isRegex" type="xs:boolean" default="false"/>
   </xs:complexType>
 

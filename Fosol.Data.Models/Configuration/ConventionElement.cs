@@ -56,12 +56,14 @@ namespace Fosol.Data.Models.Configuration
 
         #region Methods
         /// <summary>
-        /// Creates an alias for the given value by replacing invalid characters.
+        /// Creates an alias for the given value by replacing invalid characters and applying camel case if required.
         /// </summary>
         /// <param name="name">The original name from the datasource.</param>
         /// <returns>A valid alias to use instead of the original name value from the datasource.</returns>
         public string CreateAlias(string name)
         {
+            var new_name = new StringBuilder(name.Trim());
+
             // Aggregate a collection of invalid characters and their replacement values.
             var aliases = (
                 from a in this.Aliases
@@ -83,10 +85,30 @@ namespace Fosol.Data.Models.Configuration
                 else
                     exp = "(" + String.Join("|", g.Aliases.Where(a => !a.IsRegex).Select(c => Regex.Escape(c.Find))) + ")|(" + String.Join(")|(", g.Aliases.Where(a => a.IsRegex).Select(c => c.Find)) + ")";
                 var regex = new Regex(exp);
-                name = regex.Replace(name, g.ReplaceWith);
+
+                if (this.Aliases.UseCamelCase)
+                {
+                    // Loop through all the matches and if they require camel case update them accordingly.
+                    var result = new StringBuilder(new_name.ToString());
+                    var match = regex.Match(new_name.ToString());
+                    while (match.Success)
+                    {
+                        var alias = aliases.FirstOrDefault(a => a.Find.Equals(match.Value));
+                        var len = match.Value.Length;
+                        result[match.Index + len] = Char.ToUpper(name[match.Index + len]);
+                        match = match.NextMatch();
+                    }
+                    new_name = new StringBuilder(regex.Replace(result.ToString(), g.ReplaceWith));
+                }
+                else
+                    new_name = new StringBuilder(regex.Replace(new_name.ToString(), g.ReplaceWith));
             }
 
-            return name;
+            // Uppercase the first word.
+            if (this.Aliases.UseCamelCase)
+                new_name[0] = Char.ToUpper(new_name[0]);
+
+            return new_name.ToString();
         }
 
         /// <summary>
@@ -103,8 +125,7 @@ namespace Fosol.Data.Models.Configuration
                     select new AliasElement()
                     {
                         Find = ic,
-                        ReplaceWith = this.Aliases.Default,
-                        UseCamelCase = false,
+                        ReplaceWith = this.Aliases.DefaultReplaceWith,
                         IsRegex = false
                     });
 

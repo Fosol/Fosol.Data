@@ -50,7 +50,8 @@ namespace Fosol.Data.Models.SqlClient
         }
 
         /// <summary>
-        /// Deep clones the column.
+        /// Shallow clones the column.
+        /// To perform a deep clone use the Entity class (i.e. Table, View, Routine).
         /// </summary>
         /// <returns>A new copy of this column.</returns>
         public override Column Clone()
@@ -67,11 +68,6 @@ namespace Fosol.Data.Models.SqlClient
                 Precision = this.Precision,
                 Scale = this.Scale
             };
-
-            foreach (var constraint in this.Constraints)
-            {
-                column.Constraints.Add(constraint.Clone());
-            }
 
             return column;
         }

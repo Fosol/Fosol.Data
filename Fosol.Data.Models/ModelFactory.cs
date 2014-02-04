@@ -22,12 +22,13 @@ namespace Fosol.Data.Models
         /// <summary>
         /// get - The DbConnection object used to connect to the database.
         /// </summary>
-        public DbConnection Connection { get; protected set; }
+        protected DbConnection Connection { get; set; }
 
         /// <summary>
         /// get - The DataModelElement configuration object.
         /// </summary>
-        public Configuration.DataModelElement Configuration { get; protected set; }
+        /// <exception cref="System.ArgumentNullException">Property 'Configuration' cannot be null.</exception>
+        public Configuration.DataModelElement Configuration { get; private set; }
         #endregion
 
         #region Constructors
@@ -65,6 +66,7 @@ namespace Fosol.Data.Models
             if (string.IsNullOrEmpty(this.Connection.Database))
                 throw new Exceptions.ModelFactoryException("The 'Connection' property must have an intial catalog (selected database).");
 
+            // Create a default configuration.
             this.Configuration = new Configuration.DataModelElement(this.Connection.Database);
         }
 
@@ -82,6 +84,7 @@ namespace Fosol.Data.Models
             if (string.IsNullOrEmpty(this.Connection.Database))
                 throw new Exceptions.ModelFactoryException("The 'Connection' property must have an intial catalog (selected database).");
 
+            // Create a default configuration.
             this.Configuration = new Configuration.DataModelElement(this.Connection.Database);
         }
 
@@ -129,15 +132,26 @@ namespace Fosol.Data.Models
 
         #region Methods
         /// <summary>
-        /// Generate a data Model object that represents the database specified for this ModelFactory.
+        /// Generate a data Model object that represents the database specified in the configuration.
+        /// Apply the configuration to the model so that the model will be modified.
         /// </summary>
         /// <returns>A new instance of a Model.</returns>
-        public virtual Model Generate()
+        public Model Generate()
         {
-            // A database has not been selected.
-            if (string.IsNullOrEmpty(this.Connection.Database))
-                throw new Exceptions.ModelFactoryException("The 'Connection' property must have an intial catalog (selected database).");
+            var model = OnGenerate();
 
+            // Apply configuration to the model.
+            this.Configuration.ApplyConfiguration(model);
+
+            return model;
+        }
+
+        /// <summary>
+        /// Generate a data Model object that represents the database specified in the configuration.
+        /// </summary>
+        /// <returns>A new instance of a Model.</returns>
+        protected virtual Model OnGenerate()
+        {
             var model = new Model(this.Connection.Database);
 
             try
@@ -157,45 +171,52 @@ namespace Fosol.Data.Models
         }
 
         /// <summary>
-        /// Generate a default configuration for the specified 'model'.
-        /// By default the model will contain 
+        /// Generate a DataModelElement configuration object for the data Model this ModelFactory generates.
+        /// Does not apply any configuration options to the model.
         /// </summary>
-        /// <param name="model">Model </param>
-        /// <param name="convention"></param>
         /// <returns></returns>
-        public Configuration.DataModelElement GenerateConfiguration(Model model, Configuration.ConventionElement convention = null)
+        public Configuration.DataModelElement GenerateConfiguration()
         {
-            var config = (Fosol.Data.Models.Configuration.DataModelElement)model;
-
-            if (convention != null)
-            {
-                config.Convention = convention; // Not sure about this line as I added it after a long time away from this project.
-                config.Alias = convention.CreateAlias(config.Name);
-            }
-
-            return config;
+            return ModelFactory.GenerateConfiguration(this.OnGenerate());
         }
 
         /// <summary>
-        /// If this ModelFactory has a 'Configuration' value it will save the configuration file to the specified path.
-        /// If you provide a DataModelElement for the 'model' parameter it will use it to generate the configuration file.
-        /// If this ModelFactory has a 'Configuration' property value it will use it to generate the configuration file.
-        /// If all else fails the ModelFactory will attempt to generate a full model from the database and use it to generate the configuration file.
+        /// Generate a configuration for the 'model' specified.
+        /// </summary>
+        /// <param name="model">Model object you want to create a configuration for.</param>
+        /// <exception cref="System.ArgumentNullException">Paramter 'model' cannot be null.</exception>
+        /// <returns>DataModelElement object for the Model generated by this ModelFactory.</returns>
+        public static Configuration.DataModelElement GenerateConfiguration(Model model)
+        {
+            Fosol.Common.Validation.Assert.IsNotNull(model, "model");
+            return (Fosol.Data.Models.Configuration.DataModelElement)model;
+        }
+
+        /// <summary>
+        /// Save the configuration to a file.
         /// The default path is the assembly execution location.
         /// </summary>
+        /// <exception cref="System.ArgumentException">Parameter 'path' cannot be empty.</exception>
         /// <param name="path">Full path and file name.</param>
-        /// <param name="model">If you provide a DataModelElement object it will use it to create the configuration file.</param>
-        public void SaveConfiguration(string path = "fosol.datamodel.config", Configuration.DataModelElement model = null)
+        public void SaveConfiguration(string path = "fosol.datamodel.config")
         {
-            var section = new Configuration.Serialization.ModelFactorySection();
-            
-            if (model != null)
-                section.DataModels.Add((Configuration.Serialization.DataModelElement)model);
-            else if (this.Configuration != null)
-                section.DataModels.Add((Configuration.Serialization.DataModelElement)this.Configuration);
-            else
-                section.DataModels.Add((Configuration.Serialization.DataModelElement)this.GenerateConfiguration(this.Generate()));
+            ModelFactory.SaveConfiguration(this.Configuration, path);
+        }
 
+        /// <summary>
+        /// Save the configuration to a file.
+        /// The default path is the assembly execution location.
+        /// </summary>
+        /// <exception cref="System.ArgumentException">Parameter 'path' cannot be empty.</exception>
+        /// <exception cref="System.ArgumentNullException">Parameters 'config' and 'path' cannot be null.</exception>
+        /// <param name="config">DataModelElement configuration object to save as a file.</param>
+        /// <param name="path">Full path and file name.</param>
+        public static void SaveConfiguration(Configuration.DataModelElement config, string path = "fosol.datamodel.config")
+        {
+            Fosol.Common.Validation.Assert.IsNotNull(config, "config");
+            Fosol.Common.Validation.Assert.IsNotNullOrEmpty(path, "path");
+            var section = new Configuration.Serialization.ModelFactorySection();
+            section.DataModels.Add((Configuration.Serialization.DataModelElement)config);
             Fosol.Common.Serialization.XmlHelper.SerializeToFile(section, path, System.IO.FileMode.Create);
         }
 

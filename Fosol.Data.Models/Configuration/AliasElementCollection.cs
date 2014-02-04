@@ -17,11 +17,18 @@ namespace Fosol.Data.Models.Configuration
         #endregion
 
         #region Properties
-        [ConfigurationProperty("default", IsRequired = false, DefaultValue = "_")]
-        public string Default
+        [ConfigurationProperty("defaultReplaceWith", IsRequired = false, DefaultValue = "")]
+        public string DefaultReplaceWith
         {
-            get { return (string)this.Attribute("default"); }
-            set { this.Attribute("default", value); }
+            get { return (string)this.Attribute("defaultReplaceWith"); }
+            set { this.Attribute("defaultReplaceWith", value); }
+        }
+
+        [ConfigurationProperty("useCamelCase", IsRequired = false, DefaultValue = true)]
+        public bool UseCamelCase
+        {
+            get { return (bool)this.Attribute("useCamelCase"); }
+            set { this.Attribute("useCamelCase", value); }
         }
         #endregion
 

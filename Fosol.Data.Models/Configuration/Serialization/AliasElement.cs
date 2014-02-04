@@ -20,9 +20,6 @@ namespace Fosol.Data.Models.Configuration.Serialization
         [XmlAttribute(AttributeName = "replace")]
         public string Replace { get; set; }
 
-        [XmlAttribute(AttributeName = "camelCase")]
-        public bool UseCamelCase { get; set; }
-
         [XmlAttribute(AttributeName = "isRegex")]
         public bool IsRegex { get; set; }
         #endregion
@@ -32,11 +29,10 @@ namespace Fosol.Data.Models.Configuration.Serialization
         {
         }
 
-        internal AliasElement(string find, string replace = "", bool useCamelCase = true, bool isRegex = false)
+        internal AliasElement(string find, string replace = "", bool isRegex = false)
         {
             this.Find = find;
             this.Replace = replace;
-            this.UseCamelCase = useCamelCase;
             this.IsRegex = IsRegex;
         }
         #endregion
@@ -48,7 +44,7 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #region Operators
         public static explicit operator AliasElement(Configuration.AliasElement obj)
         {
-            return new AliasElement(obj.Find, obj.ReplaceWith, obj.UseCamelCase, obj.IsRegex);
+            return new AliasElement(obj.Find, obj.ReplaceWith, obj.IsRegex);
         }
         #endregion
 

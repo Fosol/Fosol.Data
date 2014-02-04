@@ -12,7 +12,7 @@ namespace Fosol.Data.Models
     /// It also provides a way to get columns based on their name or their ordinal position.
     /// </summary>
     public sealed class ColumnCollection
-        : IEnumerable<Column>, ICloneable
+        : IEnumerable<Column>
     {
         #region Variables
         private System.Threading.ReaderWriterLockSlim _Lock = new System.Threading.ReaderWriterLockSlim();
@@ -222,23 +222,6 @@ namespace Fosol.Data.Models
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        object ICloneable.Clone()
-        {
-            return this.Clone();
-        }
-
-        public ColumnCollection Clone()
-        {
-            var collection = new ColumnCollection();
-
-            foreach (var column in this)
-            {
-                collection.Add(column.Clone());
-            }
-
-            return collection;
         }
         #endregion
 

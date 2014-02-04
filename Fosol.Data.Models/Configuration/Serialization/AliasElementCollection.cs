@@ -14,8 +14,11 @@ namespace Fosol.Data.Models.Configuration.Serialization
         #endregion
 
         #region Properties
-        [XmlAttribute(AttributeName = "default")]
-        public string Default { get; set; }
+        [XmlAttribute(AttributeName = "defaultReplaceWith")]
+        public string DefaultReplaceWith { get; set; }
+
+        [XmlAttribute(AttributeName = "useCamelCase")]
+        public bool UseCamelCase { get; set; }
 
         [XmlElement(ElementName = "add", Type = typeof(AliasElement))]
         public List<AliasElement> Items { get; set; }
@@ -31,7 +34,8 @@ namespace Fosol.Data.Models.Configuration.Serialization
         internal AliasElementCollection()
         {
             this.Items = new List<AliasElement>();
-            this.Default = "_";
+            this.DefaultReplaceWith = "_";
+            this.UseCamelCase = true;
         }
         #endregion
 
@@ -46,6 +50,8 @@ namespace Fosol.Data.Models.Configuration.Serialization
         public static explicit operator AliasElementCollection(Configuration.AliasElementCollection obj)
         {
             var aliases = new AliasElementCollection();
+            aliases.UseCamelCase = obj.UseCamelCase;
+            aliases.DefaultReplaceWith = obj.DefaultReplaceWith;
             foreach (var alias in obj)
             {
                 aliases.Add((AliasElement)alias);
