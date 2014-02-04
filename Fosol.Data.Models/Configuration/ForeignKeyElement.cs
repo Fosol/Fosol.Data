@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,14 @@ namespace Fosol.Data.Models.Configuration
         {
             get { return (bool)this["useColumnName"]; }
             set { this["useColumnName"] = value; }
+        }
+
+        [ConfigurationProperty("append", IsRequired = false, DefaultValue = "Id")]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "AppendValue cannot be null or empty.")]
+        public string AppendValue
+        {
+            get { return (string)this["append"]; }
+            set { this["append"] = value; }
         }
         #endregion
 

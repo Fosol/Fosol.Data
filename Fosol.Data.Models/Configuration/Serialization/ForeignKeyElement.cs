@@ -19,6 +19,9 @@ namespace Fosol.Data.Models.Configuration.Serialization
 
         [XmlAttribute(AttributeName = "useColumnName")]
         public bool UseColumnName { get; set; }
+
+        [XmlAttribute(AttributeName = "append")]
+        public string AppendValue { get; set; }
         #endregion
 
         #region Constructors
@@ -26,23 +29,29 @@ namespace Fosol.Data.Models.Configuration.Serialization
         {
             this.Pluralize = true;
             this.UseColumnName = true;
+            this.AppendValue = "Id";
         }
 
-        internal ForeignKeyElement(bool pluralize, bool useColumnName)
+        internal ForeignKeyElement(bool pluralize, bool useColumnName, string appendValue)
         {
             this.Pluralize = pluralize;
             this.UseColumnName = UseColumnName;
+            this.AppendValue = appendValue;
         }
         #endregion
 
         #region Methods
-
         #endregion
 
         #region Operators
+        /// <summary>
+        /// Explicit conversion from a Configuration.ForeignKeyElement to a Serialization.ForeignKeyElement.
+        /// </summary>
+        /// <param name="obj">Configuration.ForeignKeyElement object.</param>
+        /// <returns>A new instance of a Serialization.ForeignKeyElement object.</returns>
         public static explicit operator ForeignKeyElement(Configuration.ForeignKeyElement obj)
         {
-            return new ForeignKeyElement(obj.Pluralize, obj.UseColumnName);
+            return new ForeignKeyElement(obj.Pluralize, obj.UseColumnName, obj.AppendValue);
         }
         #endregion
 

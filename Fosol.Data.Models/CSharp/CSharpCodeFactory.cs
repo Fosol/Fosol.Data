@@ -27,18 +27,23 @@ namespace Fosol.Data.Models.CSharp
         #endregion
 
         #region Methods
-
-        public override void Generate()
+        /// <summary>
+        /// Using the ModelFactory it will generate a Model (which is a snapshot of the database).
+        /// It will then generate code classes for the entities (tables, views, routines) within the Model.
+        /// </summary>
+        /// <param name="pathToFolder">Path to folder where the code will be generated.</param>
+        public override void Generate(string pathToFolder)
         {
             // Create the in-memory whole data Model from the database.
             var model = this.ModelFactory.Generate();
 
             foreach (var table in model.Tables)
             {
-                SaveToFile(table.Alias + ".cs", GenerateTable(table));
+                var path = System.IO.Path.Combine(new[] { pathToFolder, table.Alias + ".cs" });
+                SaveToFile(path, GenerateTable(table));
             }
-            
-            SaveToFile("Context.cs", GenerateContext(model));
+
+            SaveToFile(System.IO.Path.Combine(new[] { pathToFolder, "Context.cs" }), GenerateContext(model));
         }
 
         /// <summary>
@@ -110,7 +115,7 @@ namespace Fosol.Data.Models.CSharp
             code.AppendLine("#region Events".Indent(2));
             code.AppendLine("#endregion".Indent(2));
 
-            code.AppendLine("}".Indent(2));
+            code.AppendLine("}".Indent(1));
             code.AppendLine("}");
 
             return code.ToString();

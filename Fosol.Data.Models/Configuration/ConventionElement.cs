@@ -56,6 +56,79 @@ namespace Fosol.Data.Models.Configuration
 
         #region Methods
         /// <summary>
+        /// A very simple pluralization method.  It doesn't follow gramatical rule however.
+        /// </summary>
+        /// <param name="alias"></param>
+        /// <returns></returns>
+        private string Pluralize(string alias)
+        {
+            if (this.ForeignKeys.Pluralize)
+            {
+                if (alias.EndsWith("s"))
+                    return alias + "es";
+                else if (alias.EndsWith("y"))
+                    return alias.Substring(0, alias.Length - 1) + "ies";
+                else
+                    return alias + "s";
+            }
+
+            return alias;
+        }
+
+        public string CreateManyToOneAlias(ReferentialConstraint constraint)
+        {
+            Fosol.Common.Validation.Assert.IsValue(constraint.ConstraintType, ConstraintType.ForeignKey, "constraint.ConstraintType");
+
+            // If the relationship is based on one column, use the column name but remove the 'Append' value (i.e. Id).
+            if (constraint.Columns.Count == 1)
+            {
+                string alias;
+                var column = constraint.Columns[0].Column;
+
+                // IF an alias has not been created, create one.
+                if (string.IsNullOrEmpty(constraint.Alias))
+                {
+                    alias = this.CreateAlias(column.Name);
+
+                    // Remove the 'Append' value (i.e. Id).
+                    if (alias.EndsWith(this.ForeignKeys.AppendValue))
+                        return alias.Substring(0, alias.Length - this.ForeignKeys.AppendValue.Length);
+
+                    return alias;
+                }
+                
+                return constraint.Alias;
+            }
+
+            // This relationship is based on multiple columns.
+            // Use the table name of the primary table.
+            if (string.IsNullOrEmpty(constraint.ParentAlias))
+                return this.Pluralize(this.CreateAlias(constraint.ParentName));
+
+            return constraint.ParentAlias;
+        }
+
+        public string CreateForeignKeyAlias(Column column)
+        {
+            Fosol.Common.Validation.Assert.IsValue(column.IsForeignKey, true, "column.IsForeignKey");
+
+            string alias;
+
+            // If an alias has not been created, create one.
+            if (String.IsNullOrEmpty(column.Alias))
+            {
+                alias = this.CreateAlias(column.Name);
+
+                if (alias.EndsWith(this.ForeignKeys.AppendValue))
+                    return alias;
+
+                return alias + this.ForeignKeys.AppendValue;
+            }
+            
+            return column.Alias;
+        }
+
+        /// <summary>
         /// Creates an alias for the given value by replacing invalid characters and applying camel case if required.
         /// </summary>
         /// <param name="name">The original name from the datasource.</param>

@@ -198,7 +198,6 @@ namespace Fosol.Data.Models.Configuration
 
         private void ApplyConfigurationToTables(Model model)
         {
-            var table_import_option = this.Tables.Import;
             var remove_entities = new List<string>();
 
             foreach (var table in model.Tables)
@@ -206,14 +205,17 @@ namespace Fosol.Data.Models.Configuration
                 var table_config = this.Tables.FirstOrDefault(t => t.Name.Equals(table.Name, StringComparison.InvariantCultureIgnoreCase));
 
                 // This table is not a part of the configuration, it should be removed from the model.
-                if (table_config == null && table_import_option == ImportOption.Configured)
+                if ((table_config == null 
+                    && this.Tables.Import == ImportOption.Configured)
+                    || (table_config != null
+                    && table_config.Action == ImportAction.Ignore))
                 {
                     remove_entities.Add(table.Name);
                     continue;
                 }
 
                 if (table_config == null)
-                    table_config = new TableElement(table.Name);
+                    table_config = (TableElement)table;
 
                 table.Alias = this.Convention.CreateAlias(table.Name);
 
@@ -239,14 +241,17 @@ namespace Fosol.Data.Models.Configuration
                 var config = this.Views.FirstOrDefault(v => v.Name.Equals(view.Name, StringComparison.InvariantCultureIgnoreCase));
 
                 // This view is not a part of the configuration, it should be removed from the model.
-                if (config == null && view_import_option == ImportOption.Configured)
+                if ((config == null 
+                    && view_import_option == ImportOption.Configured)
+                    || (config != null
+                    && config.Action == ImportAction.Ignore))
                 {
                     remove_entities.Add(view.Name);
                     continue;
                 }
 
                 if (config == null)
-                    config = new ViewElement(view.Name);
+                    config = (ViewElement)view;
 
                 view.Alias = this.Convention.CreateAlias(view.Name);
 
@@ -283,14 +288,17 @@ namespace Fosol.Data.Models.Configuration
                 var config = this.Routines.FirstOrDefault(r => r.Name.Equals(routine.Name, StringComparison.InvariantCultureIgnoreCase));
 
                 // This view is not a part of the configuration, it should be removed from the model.
-                if (config == null && routine_import_option == ImportOption.Configured)
+                if ((config == null 
+                    && routine_import_option == ImportOption.Configured)
+                    || (config != null
+                    && config.Action == ImportAction.Ignore))
                 {
                     remove_entities.Add(routine.Name);
                     continue;
                 }
 
                 if (config == null)
-                    config = new RoutineElement(routine.Name);
+                    config = (RoutineElement)routine;
 
                 routine.Alias = this.Convention.CreateAlias(routine.Name);
 
@@ -326,27 +334,22 @@ namespace Fosol.Data.Models.Configuration
                 var column_config = config.Columns.FirstOrDefault(c => c.Name.Equals(column.Name, StringComparison.InvariantCultureIgnoreCase));
 
                 // This column is not a part of the configuration, it should be removed from the model.
-                if (column_config == null && config.Columns.Import == ImportOption.Configured)
+                if ((column_config == null 
+                    && config.Columns.Import == ImportOption.Configured)
+                    || (column_config != null
+                    && column_config.Action == ImportAction.Ignore))
                 {
                     remove_columns.Add(column.Name);
                     continue;
                 }
 
                 if (column_config == null)
-                    column_config =  new ColumnElement(column.Name);
+                    column_config = (ColumnElement)column;
 
-                column.Alias = this.Convention.CreateAlias(column.Name);
-
-                foreach (var constraint in column.Constraints)
-                {
-                    constraint.Alias = this.Convention.CreateAlias(constraint.Name);
-
-                    if (constraint.GetType() == typeof(ReferentialConstraint))
-                    {
-                        var ref_constraint = (ReferentialConstraint)constraint;
-                        ref_constraint.ParentAlias = this.Convention.CreateAlias(ref_constraint.ParentName);
-                    }
-                }
+                if (column.IsForeignKey)
+                    column.Alias = this.Convention.CreateForeignKeyAlias(column);
+                else
+                    column.Alias = this.Convention.CreateAlias(column.Name);
             }
 
             // Remove columns from table that are not part of the configuration.
@@ -365,16 +368,38 @@ namespace Fosol.Data.Models.Configuration
                 var constraint_config = config.Constraints.FirstOrDefault(c => c.Name.Equals(constraint.Name, StringComparison.InvariantCultureIgnoreCase));
 
                 // This constraint is not a part of the configuration, it should be removed from the model.
-                if (constraint_config == null && config.Constraints.Import == ImportOption.Configured)
+                if ((constraint_config == null 
+                    && config.Constraints.Import == ImportOption.Configured)
+                    || (constraint_config != null
+                    && constraint_config.Action == ImportAction.Ignore))
                 {
                     remove_constraints.Add(constraint.Name);
                     continue;
                 }
 
-                if (constraint_config == null)
-                    constraint_config = new ConstraintElement(constraint.Name);
+                // Check if the configuration has removed the parent table.
+                // If it has, remove the constraint.
+                if (constraint.GetType() == typeof(ReferentialConstraint))
+                {
+                    var parent_table_config = this.Tables.FirstOrDefault(t => t.Name.Equals(((ReferentialConstraint)constraint).ParentName, StringComparison.InvariantCultureIgnoreCase));
 
-                constraint.Alias = this.Convention.CreateAlias(constraint.Name);
+                    if ((parent_table_config == null
+                        && this.Tables.Import == ImportOption.Configured)
+                        || (parent_table_config != null
+                        && parent_table_config.Action == ImportAction.Ignore))
+                    {
+                        remove_constraints.Add(constraint.Name);
+                        continue;
+                    }
+                }
+
+                if (constraint_config == null)
+                    constraint_config = (ConstraintElement)constraint;
+
+                if (constraint.ConstraintType == ConstraintType.ForeignKey)
+                    constraint.Alias = this.Convention.CreateManyToOneAlias((ReferentialConstraint)constraint);
+                else
+                    constraint.Alias = this.Convention.CreateAlias(constraint.Name);
 
                 if (constraint.GetType() == typeof(ReferentialConstraint))
                 {

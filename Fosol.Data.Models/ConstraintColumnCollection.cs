@@ -23,6 +23,23 @@ namespace Fosol.Data.Models
         /// get - Number of columns in this constraint.
         /// </summary>
         public int Count { get { return _Columns.Count; } }
+
+        /// <summary>
+        /// get - The constraint at the specified index position.
+        /// </summary>
+        /// <exception cref="System.IndexOutOfRangeException">Parameter 'index' must be a valid index position.</exception>
+        /// <param name="index">Index position of the desired constraint.</param>
+        /// <returns>The ConstraintColumn at the specified index position.</returns>
+        public ConstraintColumn this[int index]
+        {
+            get
+            {
+                if (index < 0 || index >= this.Count)
+                    throw new IndexOutOfRangeException();
+
+                return _Columns[index];
+            }
+        }
         #endregion
 
         #region Constructors

@@ -16,7 +16,7 @@ namespace Fosol.Data.Models.TestConsole
             var factory = new SqlModelFactory(config_model);
             //var model = factory.Generate();
             var code_factory = new CSharp.CSharpCodeFactory(factory);
-            code_factory.Generate();
+            code_factory.Generate("Model\\");
             //Fosol.Data.Models.ModelFactory.Test();
         }
     }

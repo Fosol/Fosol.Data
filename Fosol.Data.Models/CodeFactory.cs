@@ -24,11 +24,6 @@ namespace Fosol.Data.Models
         {
             get { return _Factory; }
         }
-
-        protected string TargetDirectory
-        {
-            get { return Environment.CurrentDirectory; }
-        }
         #endregion
 
         #region Constructors
@@ -43,16 +38,22 @@ namespace Fosol.Data.Models
         /// <summary>
         /// Generate the code files for the data Model.
         /// </summary>
-        public abstract void Generate();
+        /// <param name="pathToFolder">Path to the folder you want to save the code files in.</param>
+        public abstract void Generate(string pathToFolder);
 
         /// <summary>
         /// Save the code into the specified file.
         /// </summary>
-        /// <param name="filename">Name of the file.</param>
+        /// <param name="fullPath">Path to directory and the name of the file.</param>
         /// <param name="code">Code to save into the file.</param>
-        protected void SaveToFile(string filename, string code)
+        protected void SaveToFile(string fullPath, string code)
         {
-            var file = System.IO.File.CreateText(System.IO.Path.Combine(new[] { this.TargetDirectory, filename }));
+            var path = System.IO.Path.GetDirectoryName(fullPath);
+
+            if (!System.IO.Directory.Exists(path))
+                System.IO.Directory.CreateDirectory(path);
+
+            var file = System.IO.File.CreateText(fullPath);
             file.Write(code);
             file.Close();
         }
